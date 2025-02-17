@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=BIZ+UDPMincho&family=Bebas+Neue&family=Cutive&family=Gothic+A1&family=Kumbh+Sans:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Syne:wght@400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Adamina&family=BIZ+UDPMincho&family=Bebas+Neue&family=Cutive&family=Dancing+Script:wght@400..700&family=Gothic+A1&family=Kumbh+Sans:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&family=Syne:wght@400..800&display=swap');
 *{
     margin: 0;
 }
@@ -14,6 +14,8 @@
     justify-content: space-between;
     margin: 1rem 2.5rem;
     border: 2px dotted white;
+    backdrop-filter: blur(1rem);
+    background-color: rgba(0, 0, 0, 0.2);
     align-items: center;
     padding: 1rem 1.5rem;
     border-radius: 1.5rem;
@@ -117,4 +119,85 @@ a{
     font-family: Adamina;
     font-size: 3vw;
     text-align: center;
+}
+.container2{
+    display: flex;
+    justify-content: space-between;
+    margin: 3rem 2rem;
+}
+.hotd{
+    width: 20vw;
+    height: 45vw;
+    scale: 1;
+    overflow: hidden;
+    border: 1px dotted black;
+    border-radius: 0.8rem;
+}
+.hotdimg{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    position: absolute;
+}
+.naam{
+    font-size: 2.5vw;
+    font-family: Adamina;
+    color: white;
+    margin: 33vw 0 0 1vw;
+}
+.naam2{
+    font-size: 2.5vw;
+    font-family: Adamina;
+    color: white;
+    margin: 40vw 0 0 1vw;
+}
+.hotd:hover{
+    cursor: pointer;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    transition: transform 0.7s ease-in-out;
+    .naam{
+        transform: translateY(-110%) translateX(25%);
+        transition: transform 0.7s ease;
+    }
+    .naam2{
+        transform: translateY(-450%) translateX(25%);
+        transition: transform 0.7s ease;
+    }
+    .hotdimg{
+        filter: blur(2px);
+    }
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+}
+.harry{
+    width: 50vw;
+    height: 45vw;
+    scale: 1;
+    overflow: hidden;
+    border: 1px dotted black;
+    border-radius: 0.8rem;
+}
+.harryimg{
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    position: absolute;
+}
+.harry:hover{
+    cursor: pointer;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    transition: transform 0.7s ease-in-out;
+    .naam3{
+        transform: translateY(-110%) translateX(33%);
+        transition: transform 0.9s ease;
+    }
+    .harryimg{
+        filter: blur(2px);
+    }
+}
+.naam3{
+    font-size: 2.5vw;
+    font-family: Adamina;
+    color: white;
+    margin: 30vw 0 0 1vw;
 }
