@@ -84,6 +84,11 @@ a{
     font-family: Roboto Serif;
     font-size: 1.5rem;
     margin-left: 12vw;
+    transition: transform 1s ease;
+}
+.play:hover{
+    scale: 1.04;
+    transition: scale 0.5s ease;
 }
 .play > img{
     width: 3rem;
@@ -112,6 +117,7 @@ a{
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
     scale: 1.01;
     transition: transform 0.7s ease-in-out;
+    transition: scale 0.5s ease;
 }
 .films > p{
     font-size: 1.2rem;
@@ -166,6 +172,7 @@ a{
     }
     .hotdimg{
         filter: blur(2px);
+        transition: filter 1s ease;
     }
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
 }
@@ -193,6 +200,7 @@ a{
     }
     .harryimg{
         filter: blur(2px);
+        transition: filter 1s ease;
     }
 }
 .naam3{
