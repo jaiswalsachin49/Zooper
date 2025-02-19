@@ -13,6 +13,9 @@ body{
     z-index: -1;
 }
 .header{
+    width: 92%;
+    z-index: 2;
+    position: fixed;
     display: flex;
     justify-content: space-between;
     margin: 1rem 2.5rem;
@@ -68,6 +71,10 @@ a{
 @media (max-width: 768px) {
     .spacer{
         height: 20vw;
+    }
+    .header{
+        width: 85vw;
+        margin: 1rem 2rem;
     }
 }
 .watch_sec{
