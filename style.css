@@ -5,12 +5,18 @@
 body{
     background-color: rgb(1 1 1);
 }
-.breaking_bad{
-    width: 100%;
+.trailer{
+    display: flex;
     position: absolute;
     top: 0;
-    left: 0;
     z-index: -1;
+    height: 60vw;
+    width: 100vw;
+    overflow: hidden;
+}
+.trail{
+    position: relative;
+    right: 50%;
 }
 .header{
     width: 92%;
@@ -19,9 +25,9 @@ body{
     display: flex;
     justify-content: space-between;
     margin: 1rem 2.5rem;
-    border: 2px dotted white;
+    /* border: 0.5px dotted white; */
     backdrop-filter: blur(1rem);
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.368);
     align-items: center;
     padding: 1rem 1.5rem;
     border-radius: 1.5rem;
@@ -93,7 +99,7 @@ a{
     color: black;
     font-family: Roboto Serif;
     font-size: 1.5rem;
-    margin-left: 12vw;
+    margin-left: 10vw;
     transition: transform 1s ease;
 }
 .play:hover{
@@ -112,31 +118,31 @@ a{
     margin: 3rem 2rem;
 }
 .film{
-    width: 29vw;
-    height: 16vw;
-    scale: 1.08;
-    margin-top: 0.4rem;
+    width: 100%;
+    object-fit: cover;
 }
 .films{
+    width: 29vw;
+    height: 20vw;
     border: 1px dotted rgb(250, 247, 247);
-    border-radius: 0.8rem;
+    border-radius: 2rem;
     overflow: hidden;
-    background-color: white;
+    background-color: rgb(0, 0, 0);
 }
 .films:hover{
     cursor: pointer;
-    box-shadow: 0 0 1rem rgba(246, 246, 246, 0.861);
+    box-shadow: 0 0 1rem rgba(246, 246, 246, 0.3);
     scale: 1.01;
     transition: transform 0.7s ease-in-out;
     transition: scale 0.5s ease;
 }
 .films > p{
     font-size: 1.2rem;
-    color: black;
+    color: rgba(255, 255, 255, 0.428);
     font-family: Adamina;
     font-size: 3vw;
     text-align: center;
-    background-color: rgb(255, 254, 254);
+    background-color: rgb(9, 9, 9);
 }
 .container2{
     display: flex;
@@ -148,9 +154,9 @@ a{
     height: 45vw;
     scale: 1;
     overflow: hidden;
-    border: 1px dotted rgb(239, 238, 238);
+    /* border: 1px dotted rgb(239, 238, 238); */
     border-radius: 0.8rem;
-    background-color: rgb(246, 246, 246);
+    background-color: rgb(6, 6, 6);
 }
 .hotdimg{
     width: 100%;
@@ -161,14 +167,14 @@ a{
 .naam{
     font-size: 2.5vw;
     font-family: Adamina;
-    color: black;
-    margin: 37vw 0 0 1vw;
+    color: rgba(255, 255, 255, 0.428);
+    margin: 32.1vw 0 0 1vw;
 }
 .naam2{
     font-size: 2.5vw;
     font-family: Adamina;
-    color: black;
-    margin: 38vw 0 0 1vw;
+    color: rgba(255, 255, 255, 0.428);
+    margin: 33.5vw 0 0 1vw;
 }
 .hotd:hover{
     cursor: pointer;
@@ -177,15 +183,19 @@ a{
         border-radius: 0.8rem;
         transition: height 0.9s ease;
     }
+    .playnow{
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
 }
 .harry{
     width: 50vw;
     height: 45vw;
     scale: 1;
     overflow: hidden;
-    border: 1px dotted rgb(236, 232, 232);
+    /* border: 1px dotted rgb(236, 232, 232); */
     border-radius: 0.8rem;
-    background-color: white;
+    background-color: rgba(43, 42, 42, 0.289);
 }
 .harryimg{
     height: 100%;
@@ -203,6 +213,16 @@ a{
 .naam3{
     font-size: 2.5vw;
     font-family: Adamina;
-    color: black;
-    margin: 37vw 0 0 1vw;
+    color: rgba(255, 255, 255, 0.428);
+    margin: 34vw 0 0 1vw;
 }
+.playnow{
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.367);
+    border-radius: 1.5rem;
+    padding: 0.2rem;
+    width: 10%;
+    margin: 0.8vw;
+    opacity: 0;
+}
+
