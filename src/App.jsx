@@ -5,10 +5,10 @@ import { Allroutes } from './routes/Allroutes';
 
 function App() {
   return (
-    <Router>
+    <div>
     <Navbar />
     <Allroutes />
-    </Router>
+    </div>
   )
 }
 

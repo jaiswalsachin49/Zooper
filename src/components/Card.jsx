@@ -11,13 +11,8 @@ const MovieCard = ({ image, title, description, id }) => {
       />
 
       <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-        {/* Title */}
         <h2 className="text-white text-lg font-bold mb-2">{title}</h2>
-
-        {/* Description */}
         <p className="text-gray-300 text-sm line-clamp-2 mb-4">{description}</p>
-
-        {/* Watch Now Button */}
         <Link
           to={`/movie/${id}`}
           className="bg-white text-black font-semibold py-2 rounded-lg text-center hover:bg-gray-200 transition-colors"

@@ -1,11 +1,24 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { Menu, X } from "lucide-react";
 import Search from "../assets/search.png";
 import { Link } from "react-router-dom";
 import GenreDropdown from "./Genres";
+import {SearchContext } from "../context/search.context.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+  const navigate = useNavigate();
+  function handleSearch(event) {
+    const query = event.target.value;
+    setSearchQuery(query);
+    if (query.trim() !== "") {
+      navigate(`/search/${query}`);
+    } else {
+      navigate("/");
+    } 
+  }
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[92%] flex justify-between items-center p-4 rounded-3xl backdrop-blur-[1rem] bg-white/10 header_font">
@@ -17,6 +30,8 @@ const Navbar = () => {
           <input
             type="text"
             placeholder="Search here..."
+            value={searchQuery}
+            onChange={handleSearch}
             className="bg-transparent outline-none text-white placeholder-white-400 text-sm w-full seach_input ml-2"
           />
         </div>
