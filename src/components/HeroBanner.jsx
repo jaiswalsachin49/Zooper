@@ -58,7 +58,7 @@ const HeroBanner = ({ movies = [] }) => {
         <div className="flex space-x-4">
           <Link
             to={`/movie/${movie.id}`}
-            className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+            className="bg-white text-black px-30 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
           >
             Watch Now
           </Link>
