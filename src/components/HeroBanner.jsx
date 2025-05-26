@@ -29,7 +29,7 @@ const HeroBanner = ({ movies = [] }) => {
   const movie = filteredMovies[currentIndex];
 
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden rounded-xl mt-15 mb-10">
+    <div className="relative w-full h-[80vh] overflow-hidden rounded-xl mt-30 mb-10">
       <img
         src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
         alt={movie.title ? movie.title : movie.name}
