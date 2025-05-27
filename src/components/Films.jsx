@@ -7,6 +7,7 @@ import { GenresContext } from "../context/genres.context";
 export default function Films() {
   const { genre } = useContext(GenresContext);
   const data = MovieData(genre); 
+  console.log(data)
   const genres = [
     { id: 28, name: "Action" },
     { id: 12, name: "Adventure" },
