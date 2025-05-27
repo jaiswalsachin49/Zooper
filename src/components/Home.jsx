@@ -251,7 +251,7 @@ export default function Trending() {
       "vote_average": 8.52,
       "vote_count": 33871
     },
-     {
+    {
       "adult": false,
       "backdrop_path": "/y2DB71C4nyIdMrANijz8mzvQtk6.jpg",
       "genre_ids": [
@@ -370,8 +370,115 @@ export default function Trending() {
       "video": false,
       "vote_average": 7.445,
       "vote_count": 19701
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/dQOphbONxlpPsKo30araFr0CYMO.jpg",
+      "genre_ids": [
+        10765,
+        18,
+        10759
+      ],
+      "id": 71912,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Witcher",
+      "overview": "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.",
+      "popularity": 35.3546,
+      "poster_path": "/cZ0d3rtvXPVvuiX22sP79K3Hmjz.jpg",
+      "first_air_date": "2019-12-20",
+      "name": "The Witcher",
+      "vote_average": 8.025,
+      "vote_count": 6130
+    },
+    {
+      "backdrop_path": "/2vxKa3gMHc84O1iHRkslqeHSsxE.jpg",
+      "id": 1068452,
+      "title": "Hi Nanna",
+      "original_title": "హాయ్ నాన్న",
+      "overview": "Six-year-old Mahi, a spirited child with cystic fibrosis, shares a deep yet complex bond with her father, Viraj, a dedicated single parent and successful fashion photographer. Her curiosity about her absent mother leads to a journey of discovery when she runs away with her loyal dog, Pluto. A chance encounter with a kind woman named Yashna sparks unexpected revelations, intertwining their lives in ways they never anticipated. Set against a backdrop of love, sacrifice, and redemption, Mahi’s story is a heartfelt exploration of family, resilience, and the enduring power of connection.",
+      "poster_path": "/hhMLtq9m1aK0dpY9Wcq26XeDH2z.jpg",
+      "media_type": "movie",
+      "adult": false,
+      "original_language": "te",
+      "genre_ids": [
+        18,
+        10751,
+        10749
+      ],
+      "popularity": 4.5737,
+      "release_date": "2023-12-07",
+      "video": false,
+      "vote_average": 7.819,
+      "vote_count": 47
+    },
+    {
+      "backdrop_path": "/3Sdi32wfIIOtDz1hYik6bGe1iWC.jpg",
+      "id": 634120,
+      "title": "777 Charlie",
+      "original_title": "777 ಚಾರ್ಲಿ",
+      "overview": "Dharma is stuck in a rut with his negative and lonely lifestyle and spends each day in the comfort of his loneliness. A pup named Charlie who is naughty and energetic which is a complete contrast with the Dharma’s character enters his life and gives him a new perspective towards it.",
+      "poster_path": "/qArPmXH0aWsT3SEtYl8XrU2Oz48.jpg",
+      "media_type": "movie",
+      "adult": false,
+      "original_language": "kn",
+      "genre_ids": [
+        18,
+        12,
+        35
+      ],
+      "popularity": 2.5271,
+      "release_date": "2022-06-10",
+      "video": false,
+      "vote_average": 7.6,
+      "vote_count": 51
+    },
+    {
+      "backdrop_path": "/rGkjtv6UdL1ysDmZuBjbNl3PAA1.jpg",
+      "id": 132117,
+      "name": "Farzi",
+      "original_name": "फर्जी",
+      "overview": "Sunny, a brilliant small-time artist is catapulted into the high-stakes world of counterfeiting when he creates the perfect fake currency note, even as Michael, a fiery, unorthodox task force officer wants to rid the country of the counterfeiting menace. In this thrilling cat-and-mouse race, losing is not an option!",
+      "poster_path": "/cTS86RwEBIDgCgUmjWQTSoPsK6p.jpg",
+      "media_type": "tv",
+      "adult": false,
+      "original_language": "hi",
+      "genre_ids": [
+        18,
+        80
+      ],
+      "popularity": 13.7369,
+      "first_air_date": "2023-02-10",
+      "vote_average": 7.806,
+      "vote_count": 126,
+      "origin_country": [
+        "IN"
+      ]
+    },
+    {
+      "backdrop_path": "/nGlNQ6uiS63g8MTAbPrhvmCIFO3.jpg",
+      "id": 824744,
+      "title": "Shiddat",
+      "original_title": "शिद्दत",
+      "overview": "Love-struck Jaggi can cross the seven seas for his dream girl, Kartika. Even if it means stopping her wedding as he doesn't want to be friend-zoned.",
+      "poster_path": "/7OMGLNH4yv4UxLI9gmKZSjY6enS.jpg",
+      "media_type": "movie",
+      "adult": false,
+      "original_language": "hi",
+      "genre_ids": [
+        10749,
+        18
+      ],
+      "popularity": 2.8112,
+      "release_date": "2021-10-01",
+      "video": false,
+      "vote_average": 6.8,
+      "vote_count": 23
     }
   ]
+  
 
   return(
     <>
