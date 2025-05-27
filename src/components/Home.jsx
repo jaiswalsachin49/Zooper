@@ -186,7 +186,7 @@ export default function Trending() {
         "US"
       ]
     },
-     {
+    {
       "backdrop_path": "/uJUe985oIuRiD3hmHQYskIMc2WU.jpg",
       "id": 62560,
       "name": "Mr. Robot",
@@ -332,7 +332,7 @@ export default function Trending() {
       "vote_average": 8.137,
       "vote_count": 26459
     },
-     {
+    {
       "adult": false,
       "backdrop_path": "/l33oR0mnvf20avWyIMxW02EtQxn.jpg",
       "genre_ids": [
@@ -479,7 +479,6 @@ export default function Trending() {
     }
   ]
   
-
   return(
     <>
     <div className="text-black px-6 mb-20">

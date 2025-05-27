@@ -21,8 +21,8 @@ const Navbar = () => {
   }
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 w-[92%] flex justify-between items-center p-4 rounded-3xl backdrop-blur-[1rem] bg-white/25 header_font">
-      <Link to={"/"}><div className="text-white text-2xl font-bold flex items-center gap-1.5 "><img src="/logo.png" alt="logo"/>ZOOPER</div></Link>
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 w-[92%] flex justify-between items-center p-3 rounded-3xl backdrop-blur-[1rem] bg-white/25 header_font">
+      <Link to={"/"}><div className="text-white text-2xl font-bold flex items-center gap-1.5 "><img src="/logo.png" alt="logo" className="w-[2vw]"/>ZOOPER</div></Link>
 
       <div className="md:flex items-center md:space-x-12 space-x-4">
         <div className="flex items-center bg-white/10 rounded-3xl px-2 py-3 w-56 ml-4">
