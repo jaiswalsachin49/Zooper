@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import useTrendingData from '../../hooks/TrendingData';
 import MovieCard from '../Card';
 
@@ -19,7 +19,7 @@ export default function TrendingMovie() {
             description={movie.overview}
             id={movie.id}
             />
-        ))}
+            ))}
         </div>
     </div>
     )

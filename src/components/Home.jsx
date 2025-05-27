@@ -372,6 +372,7 @@ export default function Trending() {
       "vote_count": 19701
     }
   ]
+
   return(
     <>
     <div className="text-black px-6 mb-20">
