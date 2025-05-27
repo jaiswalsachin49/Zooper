@@ -14,6 +14,7 @@ export default function TrendingMovie() {
             <MovieCard
             key={movie.id}
             image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            media_type={movie.media_type}
             title={movie.title || movie.name}
             description={movie.overview}
             id={movie.id}

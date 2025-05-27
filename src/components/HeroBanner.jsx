@@ -60,7 +60,7 @@ const HeroBanner = ({ movies = [] }) => {
         <div className="flex space-x-4">
           <a
             onClick={()=>{
-              navigate(`/player/${movie.id}`)
+              navigate(`/player/${movie.media_type}/${movie.id}`)
             }}
             className="bg-white text-black px-30 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
           >

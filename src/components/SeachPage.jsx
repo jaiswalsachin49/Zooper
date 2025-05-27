@@ -17,6 +17,7 @@ export const SearchPage = () => {
         movie.poster_path && 
           <MovieCard
             key={movie.id}
+            media_type={movie.media_type}
             image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             title={movie.title || movie.name}
             description={movie.overview}

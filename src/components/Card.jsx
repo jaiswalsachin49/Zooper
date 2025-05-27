@@ -17,7 +17,7 @@ const MovieCard = ({ image, title, description, id }) => {
         <p className="text-gray-300 text-sm line-clamp-2 mb-4">{description}</p>
         <p
           onClick={()=>{
-            navigate(`/player/${id}`)
+            navigate(`/player/${media_type}/${id}`)
           }}
           className="bg-white text-black font-semibold py-2 rounded-lg text-center hover:bg-gray-200 transition-colors"
         >
