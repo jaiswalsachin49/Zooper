@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const MovieCard = ({ image, title, description, id }) => {
+const MovieCard = ({ image, title, description, id, media_type }) => {
   const navigate = useNavigate()
   return (
     <div className="relative group overflow-hidden rounded-xl cursor-pointer bg-black/20 backdrop-blur-md w-[15vw] h-auto shadow-lg transition-transform duration-300 hover:scale-105 card">
