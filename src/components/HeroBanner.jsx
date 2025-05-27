@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HeroBanner = ({ movies = [] }) => {
+  const navigate = useNavigate()
   const filteredMovies = movies.filter(
     (movie) => movie.backdrop_path && movie.overview
   );
@@ -56,12 +58,14 @@ const HeroBanner = ({ movies = [] }) => {
         </p>
 
         <div className="flex space-x-4">
-          <Link
-            to={`/movie/${movie.id}`}
+          <a
+            onClick={()=>{
+              navigate(`/player/${movie.id}`)
+            }}
             className="bg-white text-black px-30 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
           >
             Watch Now
-          </Link>
+          </a>
         </div>
       </div>
     </div>

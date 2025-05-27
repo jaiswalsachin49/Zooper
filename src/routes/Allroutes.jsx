@@ -3,6 +3,7 @@ import Films from '../components/Films';
 import TVShows from '../components/TV-Shows';
 import SeachPage from '../components/SeachPage';
 import Home from '../components/Home';
+import Player from '../components/Player';
 
 
 export const Allroutes = () => {
@@ -12,6 +13,7 @@ export const Allroutes = () => {
       <Route path="/TV-Shows" element={<TVShows />} />
       <Route path="/films" element={<Films />} />
       <Route path='/search/:query' element={<SeachPage />} />
+      <Route path='/player/:playerId' element={<Player /> }/>
     </Routes>
   )
 }
