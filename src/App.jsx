@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import { Allroutes } from './routes/Allroutes';
 import Footer from './components/Footer';
+import { Analytics } from "@vercel/analytics/next"
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
     <Navbar />
     <Allroutes />
     <Footer />
+    <Analytics />
     </div>
   )
 }
