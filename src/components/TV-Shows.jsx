@@ -10,7 +10,7 @@ export default function TVShows() {
     <div className="text-black px-6 mb-20">
         {data.length > 0 && <HeroBanner movies={data} />}
       <h1 className="text-3xl font-bold mb-15 mt-15 ml-15 text-white">Popular TV-Shows</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 ml-15 mr-15">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4">
         {data.map((movie) => (
           movie.poster_path &&
           <MovieCard

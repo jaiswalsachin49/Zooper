@@ -12,7 +12,7 @@ export const SearchPage = () => {
       {searchResults.length > 0 && <HeroBanner movies={searchResults} />}
       <h1 className="text-3xl font-bold mb-15 mt-15 ml-15 text-white">Search Results</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 ml-15 mr-15">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4">
         {searchResults && searchResults.map((movie) => (
         movie.poster_path && 
           <MovieCard

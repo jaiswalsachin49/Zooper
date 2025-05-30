@@ -1,15 +1,16 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Menu, X } from "lucide-react";
 import Search from "../assets/search.png";
 import { Link } from "react-router-dom";
 import GenreDropdown from "./Genres";
-import {SearchContext } from "../context/search.context.jsx";
+import { SearchContext } from "../context/search.context.jsx";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
   const navigate = useNavigate();
+
   function handleSearch(event) {
     const query = event.target.value;
     setSearchQuery(query);
@@ -17,44 +18,63 @@ const Navbar = () => {
       navigate(`/search/${query}`);
     } else {
       navigate("/");
-    } 
+    }
   }
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 w-[92%] flex justify-between items-center p-3 rounded-3xl backdrop-blur-[1rem] bg-white/25 header_font">
-      <Link to={"/"}><div className="text-white text-2xl font-bold flex items-center gap-1.5 "><img src="/logo.png" alt="logo" className="w-[2vw]"/>ZOOPER</div></Link>
+      <Link to={"/"}>
+        <div className="text-white text-2xl font-bold flex items-center gap-1.5 sm:text-[1.5rem]">
+          <img src="/logo.png" alt="logo" className="w-8" />
+          ZOOPER
+        </div>
+      </Link>
 
-      <div className="md:flex items-center md:space-x-12 space-x-4">
-        <div className="flex items-center bg-white/10 rounded-3xl px-2 py-3 w-56 ml-4">
+      <div className="md:flex items-center md:space-x-12 space-x-4 sm:w-[45vw] ml-4">
+        <div className="flex items-center bg-white/10 rounded-3xl px-2 py-3 md:w-50 ml-5 sm:w-40">
           <img src={Search} alt="Search" className="w-5 h-5 mr-2" />
           <input
             type="text"
             placeholder="Search here..."
             value={searchQuery}
             onChange={handleSearch}
-            className="bg-transparent outline-none text-white placeholder-white-400 text-sm w-full seach_input ml-2"
+            className="bg-transparent outline-none text-white placeholder-white/70 text-sm w-full ml-2"
           />
         </div>
+
         <div className="space-x-12 hidden md:flex text-white text-[1.2vw] p-[0.8vw]">
-            <Link to={"/"} ><div className="hover:text-gray-300">Home</div></Link>
-            <Link to={"/TV-Shows"} ><div className="hover:text-gray-300">TV-Shows</div></Link>
-            <Link to={"/films"} ><div className="hover:text-gray-300">Films</div></Link>
-            <GenreDropdown />
+          <Link to={"/"}>
+            <div className="hover:text-gray-300 cursor-pointer">Home</div>
+          </Link>
+          <Link to={"/TV-Shows"}>
+            <div className="hover:text-gray-300 cursor-pointer">TV-Shows</div>
+          </Link>
+          <Link to={"/films"}>
+            <div className="hover:text-gray-300 cursor-pointer">Films</div>
+          </Link>
+          <GenreDropdown />
         </div>
       </div>
+
       <button
-        className="md:hidden text-white"
+        className="md:hidden text-white focus:outline-none"
+        aria-label="Toggle Menu"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         {menuOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
 
       {menuOpen && (
-        <div className="absolute top-[80px] right-0 bg-black/80 backdrop-blur-xl rounded-xl p-4 flex flex-col space-y-4 text-white md:hidden w-[200px] h-[100vh]">
-            <Link to={"/"} ><div className="hover:text-gray-300">Home</div></Link>
-            <Link to={"/TV-Shows"} ><div className="hover:text-gray-300">TV-Shows</div></Link>
-            <Link to={"/films"} ><div className="hover:text-gray-300">Films</div></Link>
-            <GenreDropdown />
+        <div className="absolute top-[80px] right-0 bg-black/80 backdrop-blur-xl rounded-xl p-4 flex flex-col space-y-4 text-white md:hidden w-[200px] max-h-[calc(100vh-100px)] overflow-auto">
+          <Link to={"/"} onClick={() => setMenuOpen(false)}>
+            <div className="hover:text-gray-300 cursor-pointer">Home</div>
+          </Link>
+          <Link to={"/TV-Shows"} onClick={() => setMenuOpen(false)}>
+            <div className="hover:text-gray-300 cursor-pointer">TV-Shows</div>
+          </Link>
+          <Link to={"/films"} onClick={() => setMenuOpen(false)}>
+            <div className="hover:text-gray-300 cursor-pointer">Films</div>
+          </Link>
         </div>
       )}
     </div>

@@ -1,32 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const HeroBanner = ({ movies = [] }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const filteredMovies = movies.filter(
     (movie) => movie.backdrop_path && movie.overview
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [languages, setLanguages] = useState(0);
 
   useEffect(() => {
     setCurrentIndex(0);
-  }, [filteredMovies.length]);
+  }, [movies]);
 
   useEffect(() => {
     if (filteredMovies.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === filteredMovies.length - 1 ? 0 : prevIndex + 1
-      );
+      handleNext();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [filteredMovies.length]);
+  }, [filteredMovies, currentIndex]);
+
+  useEffect(() => {
+    setDuration(Math.floor(Math.random() * (160 - 90 + 1)) + 90);
+    setLanguages(Math.floor(Math.random() * 2) + 1);
+  }, [currentIndex]);
 
   if (filteredMovies.length === 0) return null;
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === filteredMovies.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? filteredMovies.length - 1 : prevIndex - 1
+    );
+  };
 
   const movie = filteredMovies[currentIndex];
 
@@ -34,23 +51,23 @@ const HeroBanner = ({ movies = [] }) => {
     <div className="relative w-full h-[80vh] overflow-hidden rounded-xl mt-30 mb-10">
       <img
         src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-        alt={movie.title ? movie.title : movie.name}
+        alt={movie.title || movie.name}
         className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
       />
 
       <div className="absolute inset-0 bg-black/50"></div>
 
-      <div className="relative z-10 flex flex-col justify-end h-full pb-20 max-w-6xl mx-auto text-white">
+      <div className="relative flex flex-col justify-end h-full pb-20 max-w-6xl mx-auto text-white">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          {movie.title ? movie.title : movie.name}
+          {movie.title || movie.name}
         </h1>
 
         <div className="flex items-center text-sm opacity-80 space-x-4 mb-4">
           <span>{movie.release_date?.slice(0, 4)}</span>
           <span>|</span>
-          <span>{Math.floor(Math.random() * (160 - 90 + 1)) + 90} min</span>
+          <span>{duration} min</span>
           <span>|</span>
-          <span>{Math.floor(Math.random() * 2) + 1} Languages</span>
+          <span>{languages} Languages</span>
         </div>
 
         <p className="text-gray-300 max-w-xl line-clamp-3 mb-6">
@@ -58,16 +75,38 @@ const HeroBanner = ({ movies = [] }) => {
         </p>
 
         <div className="flex space-x-4">
-          <a
-            onClick={()=>{
-              
-              navigate(`/player/${movie.media_type}/${movie.id}`)
-            }}
-            className="bg-white text-black px-30 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+          <button
+            onClick={() => navigate(`/player/${movie.media_type}/${movie.id}`)}
+            className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
           >
             Watch Now
-          </a>
+          </button>
         </div>
+      </div>
+
+      <button
+        onClick={handlePrev}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/70 transition z-10"
+      >
+        <FaChevronLeft size={20} />
+      </button>
+      <button
+        onClick={handleNext}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/70 transition z-10"
+      >
+        <FaChevronRight size={20} />
+      </button>
+
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 space-x-2 z-10 cursor-pointer hidden md:flex">
+        {filteredMovies.map((e, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-3 h-3 rounded-full transition ${
+              index === currentIndex ? "bg-white" : "bg-gray-500"
+            }`}
+          />
+        ))}
       </div>
     </div>
   );
