@@ -30,7 +30,7 @@ const Navbar = () => {
         </div>
       </Link>
 
-      <div className="md:flex items-center md:space-x-12 space-x-4 sm:w-[45vw] ml-4">
+      <div className="md:flex items-center md:space-x-12 space-x-4 sm:w-[45vw] ml-4 justify-between">
         <div className="flex items-center bg-white/10 rounded-3xl px-2 py-3 md:w-50 ml-5 sm:w-40">
           <img src={Search} alt="Search" className="w-5 h-5 mr-2" />
           <input
