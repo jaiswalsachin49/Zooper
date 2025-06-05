@@ -96,18 +96,6 @@ const HeroBanner = ({ movies = [] }) => {
       >
         <FaChevronRight size={20} />
       </button>
-
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 space-x-2 z-10 cursor-pointer hidden md:flex">
-        {filteredMovies.map((e, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full transition ${
-              index === currentIndex ? "bg-white" : "bg-gray-500"
-            }`}
-          />
-        ))}
-      </div>
     </div>
   );
 };
