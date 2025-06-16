@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Menu, X } from "lucide-react";
 import Search from "../assets/search.png";
-import { Link } from "react-router-dom";
+import { Link,NavLink } from "react-router-dom";
 import GenreDropdown from "./Genres";
 import { SearchContext } from "../context/search.context.jsx";
 import { useNavigate } from "react-router-dom";
@@ -43,15 +43,15 @@ const Navbar = () => {
         </div>
 
         <div className="space-x-12 hidden md:flex text-white text-[1.2vw] p-[0.8vw]">
-          <Link to={"/"}>
+          <NavLink to={"/"}>
             <div className="hover:text-gray-300 cursor-pointer">Home</div>
-          </Link>
-          <Link to={"/TV-Shows"}>
+          </NavLink>
+          <NavLink to={"/TV-Shows"}>
             <div className="hover:text-gray-300 cursor-pointer">TV-Shows</div>
-          </Link>
-          <Link to={"/films"}>
+          </NavLink>
+          <NavLink to={"/films"}>
             <div className="hover:text-gray-300 cursor-pointer">Films</div>
-          </Link>
+          </NavLink>
           <GenreDropdown />
         </div>
       </div>
