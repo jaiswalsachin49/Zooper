@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const HeroBanner = ({ movies = [] }) => {
+const HeroBanner = ({ movies = [],type }) => {
   const navigate = useNavigate();
   const filteredMovies = movies.filter(
     (movie) => movie.backdrop_path && movie.overview
@@ -76,7 +76,7 @@ const HeroBanner = ({ movies = [] }) => {
 
         <div className="flex space-x-4">
           <button
-            onClick={() => navigate(`/player/${movie.media_type}/${movie.id}`)}
+            onClick={() => navigate(`/player/${type?type:movie.media_type}/${movie.id}`)}
             className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
           >
             Watch Now

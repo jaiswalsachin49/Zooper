@@ -31,7 +31,7 @@ export default function Films() {
 
   return (
     <div className="text-black px-6 mb-20">
-      {data.length > 0 && <HeroBanner movies={data} />}
+      {data.length > 0 && <HeroBanner movies={data} type="movie" />}
       <h1 className="text-3xl font-bold mb-10 mt-10 text-white">
         {genre ? `${genres.find((g) => g.id === genre)?.name} Films` : "Films"}
       </h1>
@@ -40,7 +40,7 @@ export default function Films() {
           <MovieCard
             key={movie.id}
             image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            media_type={movie.media_type}
+            media_type="movie"
             title={movie.title || movie.name}
             description={movie.overview}
             id={movie.id}
