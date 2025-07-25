@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 const Player = () => {
     const { type, playerId } = useParams()
 
-    const actualType = (!type || type === "undefined") ? "movie" : type;
+    const actualType = (!type || type === "undefined") ? "tv" : type;
     const embedURL = `https://vidsrc.xyz/embed/${actualType}/${playerId}`
 
     if (!playerId) {
