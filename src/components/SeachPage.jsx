@@ -19,6 +19,7 @@ export const SearchPage = () => {
             key={movie.id}
             media_type={movie.media_type}
             image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            backdrop_path={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
             title={movie.title || movie.name}
             description={movie.overview}
             id={movie.id}

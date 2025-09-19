@@ -6,8 +6,9 @@ import { GenresContext } from "../context/genres.context";
 
 export default function Films() {
   const { genre } = useContext(GenresContext);
-  const data = MovieData(genre);
-
+  const {data,loading,error } = MovieData(genre);
+  if (loading) return <div className="flex items-center justify-center h-screen w-full bg-black"> <p className='text-center text-1xl font-bold not-italic'>Loading...</p> </div>;
+  if (error) return <div className="flex items-center justify-center h-screen w-full bg-black"> <p className='text-center text-1xl font-bold not-italic mb-2'>Error: {error.message}</p></div>;
   const genres = [
     { id: 28, name: "Action" },
     { id: 12, name: "Adventure" },
@@ -40,6 +41,7 @@ export default function Films() {
           <MovieCard
             key={movie.id}
             image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            backdrop_path={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
             media_type="movie"
             title={movie.title || movie.name}
             description={movie.overview}

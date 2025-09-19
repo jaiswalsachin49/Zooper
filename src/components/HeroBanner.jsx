@@ -86,13 +86,13 @@ const HeroBanner = ({ movies = [],type }) => {
 
       <button
         onClick={handlePrev}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/70 transition z-10"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 hover:bg-black/70 hover:scale-[150%] p-3 rounded-full text-white transition z-10"
       >
         <FaChevronLeft size={20} />
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 rounded-full text-white hover:bg-black/70 transition z-10"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 rounded-full text-white hover:scale-[150%] hover:bg-black/70 transition z-10"
       >
         <FaChevronRight size={20} />
       </button>

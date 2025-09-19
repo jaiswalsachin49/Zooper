@@ -4,8 +4,8 @@ import MovieCard from '../Card';
 
 export default function TrendingMovie() {
     const { trendingData, loading, error } = useTrendingData("movie");
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+    if (loading) return <p className='text-center text-1xl font-bold not-italic'>Loading...</p>;
+    if (error) return <p className='text-center text-1xl font-bold not-italic'>Error: {error.message}</p>;
 
     return (
         <div className="text-black px-6 mb-20">
@@ -15,6 +15,7 @@ export default function TrendingMovie() {
                 <MovieCard
                 key={movie.id}
                 image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                backdrop_path={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                 media_type={movie.media_type}
                 title={movie.title || movie.name}
                 description={movie.overview}
