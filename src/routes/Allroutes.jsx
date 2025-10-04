@@ -1,13 +1,17 @@
+import React, { Suspense, lazy } from 'react';
 import {Routes, Route} from 'react-router-dom';
-import Films from '../components/Films';
-import TVShows from '../components/TV-Shows';
-import SeachPage from '../components/SeachPage';
-import Home from '../components/Home';
-import Player from '../components/Player';
+
+const Home = lazy(() => import('../components/Home'));
+const TVShows = lazy(() => import('../components/TV-Shows'));
+const Films = lazy(() => import('../components/Films'));
+const SeachPage = lazy(() => import('../components/SeachPage'));
+const Player = lazy(() => import('../components/Player'));
+const LoadingSpinner = () => <div>Loading...</div>;
 
 
 export const Allroutes = () => {
   return (
+    <Suspense fallback={<LoadingSpinner />}>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/TV-Shows" element={<TVShows />} />
@@ -15,5 +19,6 @@ export const Allroutes = () => {
       <Route path='/search/:query' element={<SeachPage />} />
       <Route path="/player/:type?/:playerId" element={<Player />} />
     </Routes>
+    </Suspense>
   )
 }
