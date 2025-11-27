@@ -48,8 +48,8 @@ const MovieCard = ({ image, title, backdrop_path, description, id, media_type, v
               e.stopPropagation(); // prevent opening dialog
               navigate(`/player/${media_type}/${id}`);
             }}
-            className="bg-gradient-to-r from-cyan-400 to-violet-600 text-white font-semibold py-2 rounded-lg 
-            text-center hover:from-cyan-500 hover:to-violet-700 transition-all duration-300 
+            className="bg-blue-900 text-white font-semibold py-2 rounded-lg 
+            text-center hover:bg-blue-800 transition-all duration-300 
             shadow-lg transform hover:scale-105 active:scale-95"
 
           >
