@@ -77,7 +77,7 @@ const HeroBanner = ({ movies = [], type }) => {
 
         <div className="flex space-x-4">
           <button
-            onClick={() => navigate(`/player/${type ? type : movie.media_type}/${movie.id}`)}
+            onClick={() => navigate(`/player/${type ? type : movie.media_type || "movie"}/${movie.id}`)}
             className="bg-gradient-to-r from-cyan-400 to-violet-600 text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-all duration-300 shadow-lg shadow-blue-500/20 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300"
           >
             Watch Now

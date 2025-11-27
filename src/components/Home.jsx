@@ -373,7 +373,8 @@ export default function Trending() {
       "title": "John Wick",
       "video": false,
       "vote_average": 7.445,
-      "vote_count": 19701
+      "vote_count": 19701,
+      "media_type": "movie"
     },
     {
       "adult": false,
@@ -395,7 +396,8 @@ export default function Trending() {
       "first_air_date": "2019-12-20",
       "name": "The Witcher",
       "vote_average": 8.025,
-      "vote_count": 6130
+      "vote_count": 6130,
+      "media_type": "tv"
     },
     {
       "backdrop_path": "/2vxKa3gMHc84O1iHRkslqeHSsxE.jpg",
