@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const HeroBanner = ({ movies = [],type }) => {
+const HeroBanner = ({ movies = [], type }) => {
   const navigate = useNavigate();
   const filteredMovies = movies.filter(
     (movie) => movie.backdrop_path && movie.overview
@@ -50,15 +50,16 @@ const HeroBanner = ({ movies = [],type }) => {
   return (
     <div className="relative w-full h-[80vh] overflow-hidden rounded-xl mt-30 mb-10">
       <img
+        key={movie.id}
         src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
         alt={movie.title || movie.name}
-        className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out"
+        className="absolute inset-0 w-full h-full object-cover animate-in fade-in zoom-in duration-1000"
       />
 
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0f1014] via-black/40 to-transparent"></div>
 
-      <div className="relative flex flex-col justify-end h-full pb-20 max-w-6xl mx-auto text-white">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+      <div className="relative flex flex-col justify-end h-full pb-20 max-w-6xl mx-auto text-white px-6">
+        <h1 key={movie.id + "title"} className="text-4xl md:text-7xl font-bold mb-4 animate-in fade-in slide-in-from-right-8 duration-700">
           {movie.title || movie.name}
         </h1>
 
@@ -70,14 +71,14 @@ const HeroBanner = ({ movies = [],type }) => {
           <span>{languages} Languages</span>
         </div>
 
-        <p className="text-gray-300 max-w-xl line-clamp-3 mb-6">
+        <p key={movie.id + "desc"} className="text-gray-200 max-w-xl line-clamp-3 mb-8 text-lg animate-in fade-in slide-in-from-right-12 duration-1000 delay-100">
           {movie.overview}
         </p>
 
         <div className="flex space-x-4">
           <button
-            onClick={() => navigate(`/player/${type?type:movie.media_type}/${movie.id}`)}
-            className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+            onClick={() => navigate(`/player/${type ? type : movie.media_type}/${movie.id}`)}
+            className="bg-gradient-to-r from-cyan-400 to-violet-600 text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-all duration-300 shadow-lg shadow-blue-500/20 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300"
           >
             Watch Now
           </button>

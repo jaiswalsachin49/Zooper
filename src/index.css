@@ -1,14 +1,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Abyssinica+SIL&family=Adamina&family=BIZ+UDPMincho&family=Bebas+Neue&family=Cutive&family=Dancing+Script:wght@400..700&family=Gothic+A1&family=Kumbh+Sans:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&family=Syne:wght@400..800&display=swap');
 @import "tailwindcss";
 
-body{
-    background-color: black;
+body {
+    background: radial-gradient(circle at top, #1a1a2e, #16213e, #0f3460, #000000);
+    background-attachment: fixed;
     color: white;
     overflow-x: hidden;
+    min-height: 100vh;
 }
-.header_font,.card{
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+.header_font,
+.card {
     font-family: "Kumbh Sans", sans-serif;
 }
-.search_input{
+
+.search_input {
     font-family: "Roboto Mono", monospace;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+        transition-property: left;
+    }
+
+    100% {
+        left: 100%;
+        transition-property: left;
+    }
 }

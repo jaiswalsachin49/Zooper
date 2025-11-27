@@ -5,13 +5,16 @@ import './index.css'
 import App from './App.jsx'
 import { GenresProvider } from './context/genres.context.jsx';
 import { SearchProvider } from './context/search.context.jsx';
+import { ModalProvider } from './context/ModalContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <SearchProvider>
         <GenresProvider>
-          <App />
+          <ModalProvider>
+            <App />
+          </ModalProvider>
         </GenresProvider>
       </SearchProvider>
     </BrowserRouter>

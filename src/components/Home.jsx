@@ -2,8 +2,12 @@ import React from "react";
 import TrendingMovie from "./Trending/TrendingMovie";
 import TrendingTv from "./Trending/TrendingTv";
 import HeroBanner from "./HeroBanner";
+import DetailModal from "./DetailModal";
+import { useState } from "react";
 
 export default function Trending() {
+  const [selectedContent, setSelectedContent] = useState(null);
+
   const data = [
     {
       "backdrop_path": "/9faGSFi5jam6pDWGNd0p8JcJgXQ.jpg",
@@ -478,16 +482,23 @@ export default function Trending() {
       "vote_count": 23
     }
   ]
-  
-  return(
+
+  return (
     <>
-    <div className="text-black px-6 mb-20">
+      <div className="text-white px-6 mb-20 max-w-[1600px] mx-auto">
         {data.length > 0 && <HeroBanner movies={data} />}
-    </div>
-    <h1 className="text-3xl font-bold mb-15 mt-15 ml-15 text-white">Trending Movies</h1>
-    <TrendingMovie />
-    <h1 className="text-3xl font-bold mb-15 mt-15 ml-15 text-white">Trending TV-Shows</h1>
-    <TrendingTv />
+      </div>
+      <div className="max-w-[1600px] mx-auto px-6">
+        <h1 className="text-3xl font-bold mb-8 mt-12 text-white border-l-4 border-blue-500 pl-4">Trending Movies</h1>
+        <TrendingMovie onCardClick={setSelectedContent} />
+        <h1 className="text-3xl font-bold mb-8 mt-16 text-white border-l-4 border-purple-500 pl-4">Trending TV-Shows</h1>
+        <TrendingTv onCardClick={setSelectedContent} />
+      </div>
+      <DetailModal
+        isOpen={!!selectedContent}
+        onClose={() => setSelectedContent(null)}
+        content={selectedContent}
+      />
     </>
   )
 }

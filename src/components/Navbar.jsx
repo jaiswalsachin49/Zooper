@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Menu, X } from "lucide-react";
 import Search from "../assets/search.png";
-import { Link,NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import GenreDropdown from "./Genres";
 import { SearchContext } from "../context/search.context.jsx";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10 w-[92%] flex justify-between items-center p-3 rounded-3xl backdrop-blur-[1rem] bg-black/75 ring-[0.75px] ring-gray-200 header_font">
+    <div className="fixed top-0 left-0 z-50 w-full flex justify-between items-center px-8 py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm transition-all duration-300">
       <Link to={"/"}>
         <div className="text-white text-2xl font-bold flex items-center gap-2 px-1 sm:text-[1.5rem]">
           <img src="/logo_white.png" alt="logo" className="w-8" />
@@ -31,26 +31,26 @@ const Navbar = () => {
       </Link>
 
       <div className="md:flex items-center md:space-x-12 space-x-4 sm:w-[45vw] ml-4 justify-between">
-        <div className="flex items-center bg-white/20 rounded-3xl px-2 py-3 md:w-50 ml-5 sm:w-40">
+        <div className="flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 md:w-64 ml-5 sm:w-40 transition-all focus-within:bg-white/10 focus-within:border-white/20">
           <img src={Search} alt="Search" className="w-5 h-5 mr-2" />
           <input
             type="text"
             placeholder="Search here..."
             value={searchQuery}
             onChange={handleSearch}
-            className="bg-transparent outline-none text-white placeholder-white/70 text-sm w-full ml-2"
+            className="bg-transparent outline-none text-white placeholder-gray-400 text-sm w-full ml-2"
           />
         </div>
 
         <div className="space-x-12 hidden md:flex text-white text-[1.2vw] p-[0.8vw]">
-          <NavLink to={"/"}>
-            <div className="hover:text-gray-300 cursor-pointer">Home</div>
+          <NavLink to={"/"} className={({ isActive }) => isActive ? "text-white font-bold whitespace-nowrap" : "text-gray-400 hover:text-white transition-colors whitespace-nowrap"}>
+            <div className="cursor-pointer">Home</div>
           </NavLink>
-          <NavLink to={"/TV-Shows"}>
-            <div className="hover:text-gray-300 cursor-pointer">TV-Shows</div>
+          <NavLink to={"/TV-Shows"} className={({ isActive }) => isActive ? "text-white font-bold whitespace-nowrap" : "text-gray-400 hover:text-white transition-colors whitespace-nowrap"}>
+            <div className="cursor-pointer">TV-Shows</div>
           </NavLink>
-          <NavLink to={"/films"}>
-            <div className="hover:text-gray-300 cursor-pointer">Films</div>
+          <NavLink to={"/films"} className={({ isActive }) => isActive ? "text-white font-bold whitespace-nowrap" : "text-gray-400 hover:text-white transition-colors whitespace-nowrap"}>
+            <div className="cursor-pointer">Films</div>
           </NavLink>
           <GenreDropdown />
         </div>

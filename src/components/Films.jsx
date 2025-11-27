@@ -3,11 +3,22 @@ import MovieData from "../hooks/MovieData";
 import MovieCard from "./Card";
 import HeroBanner from "./HeroBanner";
 import { GenresContext } from "../context/genres.context";
+import CardSkeleton from "./CardSkeleton";
 
 export default function Films() {
   const { genre } = useContext(GenresContext);
-  const {data,loading,error } = MovieData(genre);
-  if (loading) return <div className="flex items-center justify-center h-screen w-full bg-black"> <p className='text-center text-1xl font-bold not-italic'>Loading...</p> </div>;
+  const { data, loading, error } = MovieData(genre);
+  if (loading) {
+    return (
+      <div className="text-black px-6 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4 mt-32">
+          {[...Array(10)].map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div className="flex items-center justify-center h-screen w-full bg-black"> <p className='text-center text-1xl font-bold not-italic mb-2'>Error: {error.message}</p></div>;
   const genres = [
     { id: 28, name: "Action" },
@@ -46,6 +57,11 @@ export default function Films() {
             title={movie.title || movie.name}
             description={movie.overview}
             id={movie.id}
+            vote_average={movie.vote_average}
+            release_date={movie.release_date}
+            original_language={movie.original_language}
+            popularity={movie.popularity}
+            vote_count={movie.vote_count}
           />
         ))}
       </div>

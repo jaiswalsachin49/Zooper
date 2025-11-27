@@ -12,7 +12,7 @@ const Player = () => {
     }
 
     return (
-        <div className='w-full h-screen flex justify-center items-center bg-black fixed top-0 left-0 z-50'>
+        <div className='w-full h-screen flex justify-center items-center bg-black fixed top-0 left-0 z-100'>
             <iframe
                 className='w-full h-screen'
                 title="Video Player"
