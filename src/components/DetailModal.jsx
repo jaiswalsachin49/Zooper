@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
-import { X, Play, Star, Calendar, Clock } from "lucide-react";
+import { X, Play, Star, Calendar, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useFavorites from "../hooks/useFavorites";
 
 const DetailModal = ({ isOpen, onClose, content }) => {
     const navigate = useNavigate();
+    const { toggleFavorite, isFavorite } = useFavorites();
+    const favorited = content ? isFavorite(content.id, content.media_type || 'movie') : false;
 
     useEffect(() => {
         if (isOpen) {
@@ -72,7 +75,17 @@ const DetailModal = ({ isOpen, onClose, content }) => {
                                 <Play size={20} fill="currentColor" />
                                 Play Now
                             </button>
-                            {/* Add to list button could go here */}
+                            <button
+                                onClick={() => toggleFavorite(content)}
+                                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold transition-all ${
+                                    favorited 
+                                        ? 'bg-red-600 hover:bg-red-500 text-white' 
+                                        : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                                }`}
+                            >
+                                <Heart size={20} fill={favorited ? "currentColor" : "none"} />
+                                {favorited ? 'Favorited' : 'Add to Favorites'}
+                            </button>
                         </div>
                     </div>
                 </div>

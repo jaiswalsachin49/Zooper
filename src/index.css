@@ -46,3 +46,98 @@ body {
         transition-property: left;
     }
 }
+
+/* Custom Video.js Theme for Zooper */
+.vjs-theme-zooper {
+    font-family: "Kumbh Sans", sans-serif;
+}
+
+/* Control bar styling */
+.vjs-theme-zooper .vjs-control-bar {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    height: 4em;
+}
+
+/* Big play button */
+.vjs-theme-zooper .vjs-big-play-button {
+    background: rgba(59, 130, 246, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    font-size: 3.5em;
+    transition: all 0.3s ease;
+}
+
+.vjs-theme-zooper .vjs-big-play-button:hover {
+    background: rgba(59, 130, 246, 1);
+    transform: scale(1.1);
+}
+
+/* Progress bar */
+.vjs-theme-zooper .vjs-play-progress {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.vjs-theme-zooper .vjs-load-progress {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.vjs-theme-zooper .vjs-slider {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Volume bar */
+.vjs-theme-zooper .vjs-volume-level {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+/* Buttons hover effect */
+.vjs-theme-zooper .vjs-control:hover {
+    color: #3b82f6;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Loading spinner */
+.vjs-theme-zooper .vjs-loading-spinner {
+    border-color: rgba(59, 130, 246, 0.8);
+}
+
+/* Time display */
+.vjs-theme-zooper .vjs-current-time,
+.vjs-theme-zooper .vjs-duration,
+.vjs-theme-zooper .vjs-time-divider {
+    font-size: 1.1em;
+    padding-top: 0.5em;
+}
+
+/* Fullscreen adjustments */
+.vjs-theme-zooper.vjs-fullscreen .vjs-control-bar {
+    font-size: 1.2em;
+}
+
+/* Hide Video.js error display to use custom error handling */
+.vjs-theme-zooper .vjs-error-display {
+    display: none;
+}
+
+/* Progress bar hover effect */
+.vjs-theme-zooper .vjs-progress-control:hover .vjs-progress-holder {
+    font-size: 1.3em;
+}
+
+/* Menu styling for quality/playback rate */
+.vjs-theme-zooper .vjs-menu {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.vjs-theme-zooper .vjs-menu-item:hover,
+.vjs-theme-zooper .vjs-menu-item:focus {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.vjs-theme-zooper .vjs-selected {
+    background: rgba(59, 130, 246, 0.5);
+}

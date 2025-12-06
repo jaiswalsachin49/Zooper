@@ -52,6 +52,9 @@ const Navbar = () => {
           <NavLink to={"/films"} className={({ isActive }) => isActive ? "text-white font-bold whitespace-nowrap" : "text-gray-400 hover:text-white transition-colors whitespace-nowrap"}>
             <div className="cursor-pointer">Films</div>
           </NavLink>
+          <NavLink to={"/favorites"} className={({ isActive }) => isActive ? "text-white font-bold whitespace-nowrap" : "text-gray-400 hover:text-white transition-colors whitespace-nowrap"}>
+            <div className="cursor-pointer">Favorites</div>
+          </NavLink>
           <GenreDropdown />
         </div>
       </div>
@@ -74,6 +77,12 @@ const Navbar = () => {
           </Link>
           <Link to={"/films"} onClick={() => setMenuOpen(false)}>
             <div className="hover:text-gray-300 cursor-pointer">Films</div>
+          </Link>
+          <Link to={"/favorites"} onClick={() => setMenuOpen(false)}>
+            <div className="hover:text-gray-300 cursor-pointer">Favorites</div>
+          </Link>
+          <Link to={"/watch-history"} onClick={() => setMenuOpen(false)}>
+            <div className="hover:text-gray-300 cursor-pointer">Watch History</div>
           </Link>
         </div>
       )}
