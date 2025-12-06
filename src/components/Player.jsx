@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Server } from 'lucide-react'
+import { ArrowLeft, Server, Maximize, Minimize } from 'lucide-react'
 
 const VIDSRC_SERVERS = [
     { name: 'Player 1', url: import.meta.env.VITE_PLAYER1 },
@@ -14,6 +14,8 @@ const Player = () => {
     const [currentServer, setCurrentServer] = useState(0)
     const [showServerMenu, setShowServerMenu] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const [isFullscreen, setIsFullscreen] = useState(false)
+    const playerContainerRef = useRef(null)
 
     const actualType = (!type || type === "undefined") ? "movie" : type;
     
@@ -27,6 +29,51 @@ const Player = () => {
         // Reset loading state when server changes
         setIsLoading(true)
     }, [currentServer])
+
+    // Fullscreen change event listener
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement)
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange)
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange)
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange)
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange)
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange)
+        }
+    }, [])
+
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            if (playerContainerRef.current.requestFullscreen) {
+                playerContainerRef.current.requestFullscreen()
+            } else if (playerContainerRef.current.webkitRequestFullscreen) {
+                playerContainerRef.current.webkitRequestFullscreen()
+            } else if (playerContainerRef.current.mozRequestFullScreen) {
+                playerContainerRef.current.mozRequestFullScreen()
+            } else if (playerContainerRef.current.msRequestFullscreen) {
+                playerContainerRef.current.msRequestFullscreen()
+            }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen()
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen()
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen()
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen()
+            }
+        }
+    }
 
     const handleStartOver = () => {
         setStartTime(0);
@@ -47,8 +94,8 @@ const Player = () => {
     }
 
     return (
-        <div className='w-full h-screen flex justify-center items-center bg-black fixed top-0 left-0 z-[100]'>
-            {/* Back Button - Moved to bottom-left to avoid episode overlay */}
+        <div ref={playerContainerRef} className='w-full h-screen flex justify-center items-center bg-black fixed top-0 left-0 z-[100]'>
+            {/* Back Button */}
             <button
                 onClick={() => navigate(-1)}
                 className="absolute top-6 right-6 z-[105] p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl"
@@ -58,8 +105,18 @@ const Player = () => {
                 <ArrowLeft size={24} />
             </button>
 
-            {/* Server Selection Button - Bottom right */}
-            <div className="absolute top-6 right-24 z-[105]">
+            {/* Fullscreen Toggle Button */}
+            <button
+                onClick={toggleFullscreen}
+                className="absolute bottom-2 right-6 z-[105] p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
+                aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+                {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
+            </button>
+
+            {/* Server Selection Button */}
+            <div className="absolute top-6 right-20 z-[105]">
                 <button
                     onClick={() => setShowServerMenu(!showServerMenu)}
                     className="p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-2"
