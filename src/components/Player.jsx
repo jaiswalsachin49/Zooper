@@ -108,7 +108,7 @@ const Player = () => {
             {/* Fullscreen Toggle Button */}
             <button
                 onClick={toggleFullscreen}
-                className="absolute bottom-2 right-6 z-[105] p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md shadow-2xl"
+                className="absolute bottom-2 right-6 z-[105] p-3 bg-black/60 hover:bg-black/80 rounded-full text-white outline-none transition-all backdrop-blur-md shadow-2xl"
                 aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                 title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             >

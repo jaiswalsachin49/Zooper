@@ -41,7 +41,7 @@ export default function Footer() {
             </div>
 
             <p className="text-sm flex items-center">
-                Made with <FaHeart className="text-red-500 mx-1" /> by <a href='https://portfolio-pi-six-56.vercel.app' target='blank' className='ml-1'> Sachin </a>
+                Made with <FaHeart className="text-red-500 mx-1" /> by <a href='https://portfolioSachin49.vercel.app' target='blank' className='ml-1'> Sachin </a>
             </p>
             </div>
         </footer>
