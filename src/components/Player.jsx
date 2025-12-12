@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Server, Maximize, Minimize } from 'lucide-react'
 
 const VIDSRC_SERVERS = [
@@ -11,19 +11,93 @@ const VIDSRC_SERVERS = [
 const Player = () => {
     const { type, playerId } = useParams()
     const navigate = useNavigate()
+    const location = useLocation()
     const [currentServer, setCurrentServer] = useState(0)
     const [showServerMenu, setShowServerMenu] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isFullscreen, setIsFullscreen] = useState(false)
+    const [initialStartTime, setInitialStartTime] = useState(0)
     const playerContainerRef = useRef(null)
 
     const actualType = (!type || type === "undefined") ? "movie" : type;
-    
+    const movieData = location.state?.movieData;
+
+    // Load saved progress
+    useEffect(() => {
+        const savedProgress = localStorage.getItem('zooper_continue_watching');
+        if (savedProgress) {
+            try {
+                const progressData = JSON.parse(savedProgress);
+                // Find progress for this specific item
+                const itemProgress = progressData.find(item => item.id.toString() === playerId.toString());
+                if (itemProgress) {
+                    // Start a bit earlier for context (e.g. 5 seconds)
+                    setInitialStartTime(Math.max(0, itemProgress.timestamp - 5));
+                }
+            } catch (e) {
+                console.error("Error parsing continue watching data", e);
+            }
+        }
+    }, [playerId]);
+
+
     // Build video URL based on selected server
     const getVideoURL = () => {
         const server = VIDSRC_SERVERS[currentServer]
-        return `${server.url}/${actualType}/${playerId}`
+        let url = `${server.url}/${actualType}/${playerId}`
+        if (initialStartTime > 0) {
+            url += `?start_at=${Math.floor(initialStartTime)}`
+        }
+        return url
     }
+
+    // specific message listener for vidsrc
+    useEffect(() => {
+        const handleMessage = (event) => {
+            // Verify origin if possible, or check structure strictly
+            if (!event.data) return;
+
+            // Check if it's a time update event from vidsrc (usually just an object with time)
+            // or sometimes nested. We need to log to be sure, but standard vidsrc often sends { type: 'time', time: 123 } or similar.
+            // Based on search results, we look for PLAYER_EVENT or similar structure, 
+            // but lacking exact docs, we'll try to find a 'time' property in the data.
+
+            // Simple heuristic: if data has 'time' and it's a number
+            const currentTime = event.data?.time || event.data?.data?.time;
+
+            if (typeof currentTime === 'number' && currentTime > 5 && movieData) {
+                const newItem = {
+                    id: playerId,
+                    title: movieData.title || movieData.name,
+                    poster_path: movieData.poster_path,
+                    backdrop_path: movieData.backdrop_path,
+                    media_type: actualType,
+                    timestamp: currentTime,
+                    last_watched: Date.now()
+                };
+
+                const existingDataStr = localStorage.getItem('zooper_continue_watching');
+                let existingData = [];
+                if (existingDataStr) {
+                    try {
+                        existingData = JSON.parse(existingDataStr);
+                    } catch (e) { }
+                }
+
+                // Remove existing entry for this video
+                existingData = existingData.filter(item => item.id.toString() !== playerId.toString());
+                // Add new entry to top
+                existingData.unshift(newItem);
+                // Keep only last 20
+                existingData = existingData.slice(0, 20);
+
+                localStorage.setItem('zooper_continue_watching', JSON.stringify(existingData));
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [playerId, movieData, actualType]);
 
     useEffect(() => {
         // Reset loading state when server changes
@@ -75,11 +149,6 @@ const Player = () => {
         }
     }
 
-    const handleStartOver = () => {
-        setStartTime(0);
-        setShowResumePrompt(false);
-    };
-
     const handleServerChange = (index) => {
         setCurrentServer(index)
         setShowServerMenu(false)
@@ -95,15 +164,51 @@ const Player = () => {
 
     return (
         <div ref={playerContainerRef} className='w-full h-screen flex justify-center items-center bg-black fixed top-0 left-0 z-[100]'>
-            {/* Back Button */}
-            <button
-                onClick={() => navigate(-1)}
-                className="absolute top-6 right-6 z-[105] p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl"
-                aria-label="Go back"
-                title="Go back"
-            >
-                <ArrowLeft size={24} />
-            </button>
+            {/* Top Controls Container */}
+            <div className="absolute top-6 right-6 z-[105] flex items-center gap-3">
+                {/* Server Selection */}
+                <div className="relative">
+                    <button
+                        onClick={() => setShowServerMenu(!showServerMenu)}
+                        className="p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-2"
+                        aria-label="Change server"
+                        title="Change server"
+                    >
+                        <Server size={24} />
+                    </button>
+
+                    {/* Server Menu */}
+                    {showServerMenu && (
+                        <div className="absolute top-full right-0 mt-2 bg-black/90 backdrop-blur-xl rounded-xl border border-white/20 overflow-hidden shadow-2xl min-w-[150px] z-[110]">
+                            {VIDSRC_SERVERS.map((server, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleServerChange(index)}
+                                    className={`w-full px-4 py-3 text-left transition-colors ${currentServer === index
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-300 hover:bg-white/10'
+                                        }`}
+                                >
+                                    {server.name}
+                                    {currentServer === index && (
+                                        <span className="ml-2 text-xs">✓</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Back Button */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl"
+                    aria-label="Go back"
+                    title="Go back"
+                >
+                    <ArrowLeft size={24} />
+                </button>
+            </div>
 
             {/* Fullscreen Toggle Button */}
             <button
@@ -115,64 +220,6 @@ const Player = () => {
                 {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
             </button>
 
-            {/* Server Selection Button */}
-            <div className="absolute top-6 right-20 z-[105]">
-                <button
-                    onClick={() => setShowServerMenu(!showServerMenu)}
-                    className="p-3 bg-black/60 hover:bg-black/80 rounded-full text-white transition-all backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-2"
-                    aria-label="Change server"
-                    title="Change server"
-                >
-                    <Server size={24} />
-                </button>
-                
-                {/* Server Menu */}
-                {showServerMenu && (
-                    <div className="absolute top-6 right-12 mb-3 bg-black/90 backdrop-blur-xl rounded-xl border border-white/20 overflow-hidden shadow-2xl min-w-[180px]">
-                        {VIDSRC_SERVERS.map((server, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handleServerChange(index)}
-                                className={`w-full px-4 py-3 text-left transition-colors ${
-                                    currentServer === index 
-                                        ? 'bg-blue-600 text-white' 
-                                        : 'text-gray-300 hover:bg-white/10'
-                                }`}
-                            >
-                                {server.name}
-                                {currentServer === index && (
-                                    <span className="ml-2 text-xs">✓</span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Resume Prompt */}
-            {/* {showResumePrompt && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[110] bg-black/90 backdrop-blur-xl p-8 rounded-2xl border border-white/20 text-center shadow-2xl">
-                    <h3 className="text-2xl font-bold mb-4">Resume Playback?</h3>
-                    <p className="text-gray-300 mb-6">
-                        Continue from {Math.floor(resumeTime / 60)}:{String(Math.floor(resumeTime % 60)).padStart(2, '0')}
-                    </p>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={handleStartOver}
-                            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
-                        >
-                            Start Over
-                        </button>
-                        <button
-                            onClick={handleResume}
-                            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition-colors"
-                        >
-                            Resume
-                        </button>
-                    </div>
-                </div>
-            )} */}
-
             {/* Loading Indicator */}
             {isLoading && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[102]">
@@ -183,14 +230,16 @@ const Player = () => {
             {/* Video Player */}
             <div className="w-full h-full relative">
                 <iframe
-                    key={currentServer} // Force reload when server changes
+                    key={`${currentServer}-${initialStartTime}`} // Force reload start time change
                     className='w-full h-full'
                     title="Video Player"
                     allow='autoplay; encrypted-media; gyroscope; picture-in-picture'
                     allowFullScreen
+                    sandbox='allow-forms allow-same-origin allow-scripts'
                     src={getVideoURL()}
                     onLoad={() => setIsLoading(false)}
                     onError={() => setIsLoading(false)}
+                    referrerPolicy="origin"
                 />
             </div>
         </div>

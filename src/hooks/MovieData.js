@@ -1,29 +1,32 @@
 import apiClient from "../services/api";
 import { useState, useEffect } from "react";
 
-export default function useMovieData(genre) {
+export default function useMovieData(genre, mediaType = "movie") {
   const [data, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  async function getMovie() {
+  async function getMedia() {
     try {
-      const response = await apiClient.get("/discover/movie",{
+      const endpoint = mediaType === "tv" ? "/discover/tv" : "/discover/movie";
+      const response = await apiClient.get(endpoint, {
         params: {
           with_genres: genre,
           sort_by: "popularity.desc"
-    }});
+        }
+      });
       setMovies(response.data.results);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching movie data:", error);
+      console.error("Error fetching data:", error);
       setLoading(false);
       setError(error);
     }
   }
 
   useEffect(() => {
-    getMovie();
-  }, [genre]);
-  return {data,loading,error};
+    getMedia();
+  }, [genre, mediaType]);
+
+  return { data, loading, error };
 }

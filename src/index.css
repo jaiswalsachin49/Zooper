@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 body {
-    background: radial-gradient(circle at top, #1a1a2e, #16213e, #0f3460, #000000);
+    background: radial-gradient(circle at top, #1a1a2e, #10172c, #09213f, #000000);
     background-attachment: fixed;
     color: white;
     overflow-x: hidden;

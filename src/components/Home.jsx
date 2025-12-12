@@ -1,173 +1,200 @@
 import React from "react";
-import TrendingMovie from "./Trending/TrendingMovie";
-import TrendingTv from "./Trending/TrendingTv";
 import HeroBanner from "./HeroBanner";
-import DetailModal from "./DetailModal";
-import { useState } from "react";
+import Row from "./Row";
+import ContinueWatchingRow from "./ContinueWatchingRow";
+import useTrendingData from "../hooks/TrendingData";
+import { useModal } from "../context/ModalContext";
 
-export default function Trending() {
-  const [selectedContent, setSelectedContent] = useState(null);
+// Genre List
+const GENRES = [
+  { id: 28, name: "Action" },
+  { id: 12, name: "Adventure" },
+  { id: 16, name: "Animation" },
+  // { id: 35, name: "Comedy" },
+  // { id: 80, name: "Crime" },
+  // { id: 99, name: "Documentary" },
+  { id: 18, name: "Drama" },
+  // { id: 10751, name: "Family" },
+  // { id: 14, name: "Fantasy" },
+  // { id: 36, name: "History" },
+  { id: 27, name: "Horror" },
+  // { id: 10402, name: "Music" },
+  // { id: 9648, name: "Mystery" },
+  // { id: 10749, name: "Romance" },
+  { id: 878, name: "Science Fiction" },
+  { id: 53, name: "Thriller" },
+  // { id: 10752, name: "War" },
+  // { id: 37, name: "Western" },
+];
 
-  const data = [
-    {
-      "backdrop_path": "/9faGSFi5jam6pDWGNd0p8JcJgXQ.jpg",
-      "id": 1396,
-      "name": "Breaking Bad",
-      "original_name": "Breaking Bad",
-      "overview": "Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family's financial future at any cost as he enters the dangerous world of drugs and crime.",
-      "poster_path": "/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        18,
-        80
-      ],
-      "popularity": 111.0165,
-      "first_air_date": "2008-01-20",
-      "vote_average": 8.926,
-      "vote_count": 15575,
-      "origin_country": [
-        "US"
-      ]
-    },
-    {
-      "backdrop_path": "/56v2KjBlU4XaOv9rVYEQypROD7P.jpg",
-      "id": 66732,
-      "name": "Stranger Things",
-      "original_name": "Stranger Things",
-      "overview": "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
-      "poster_path": "/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        18,
-        10765,
-        9648
-      ],
-      "popularity": 65.8567,
-      "first_air_date": "2016-07-15",
-      "vote_average": 8.596,
-      "vote_count": 18321,
-      "origin_country": [
-        "US"
-      ]
-    },
-    {
-      "backdrop_path": "/hPea3Qy5Gd6z4kJLUruBbwAH8Rm.jpg",
-      "id": 60059,
-      "name": "Better Call Saul",
-      "original_name": "Better Call Saul",
-      "overview": "Six years before Saul Goodman meets Walter White. We meet him when the man who will become Saul Goodman is known as Jimmy McGill, a small-time lawyer searching for his destiny, and, more immediately, hustling to make ends meet. Working alongside, and, often, against Jimmy, is “fixer” Mike Ehrmantraut. The series tracks Jimmy’s transformation into Saul Goodman, the man who puts “criminal” in “criminal lawyer\".",
-      "poster_path": "/zjg4jpK1Wp2kiRvtt5ND0kznako.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        80,
-        18
-      ],
-      "popularity": 66.9043,
-      "first_air_date": "2015-02-08",
-      "vote_average": 8.689,
-      "vote_count": 5653,
-      "origin_country": [
-        "US"
-      ]
-    },
-    {
-      "backdrop_path": "/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg",
-      "id": 1399,
-      "name": "Game of Thrones",
-      "original_name": "Game of Thrones",
-      "overview": "Seven noble families fight for control of the mythical land of Westeros. Friction between the houses leads to full-scale war. All while a very ancient evil awakens in the farthest north. Amidst the war, a neglected military order of misfits, the Night's Watch, is all that stands between the realms of men and icy horrors beyond.",
-      "poster_path": "/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        10765,
-        18,
-        10759
-      ],
-      "popularity": 193.4111,
-      "first_air_date": "2011-04-17",
-      "vote_average": 8.456,
-      "vote_count": 25033,
-      "origin_country": [
-        "US"
-      ]
-    },
-    {
-      "backdrop_path": "/lHe8iwM4Cdm6RSEiara4PN8ZcBd.jpg",
-      "id": 44217,
-      "name": "Vikings",
-      "original_name": "Vikings",
-      "overview": "The adventures of Ragnar Lothbrok, the greatest hero of his age. The series tells the sagas of Ragnar's band of Viking brothers and his family, as he rises to become King of the Viking tribes. As well as being a fearless warrior, Ragnar embodies the Norse traditions of devotion to the gods. Legend has it that he was a direct descendant of Odin, the god of war and warriors.",
-      "poster_path": "/bQLrHIRNEkE3PdIWQrZHynQZazu.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        10759,
-        18,
-        10768
-      ],
-      "popularity": 92.2886,
-      "first_air_date": "2013-03-03",
-      "vote_average": 8.095,
-      "vote_count": 7182,
-      "origin_country": [
-        "CA"
-      ]
-    },
-    {
-      "backdrop_path": "/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg",
-      "id": 94997,
-      "name": "House of the Dragon",
-      "original_name": "House of the Dragon",
-      "overview": "The Targaryen dynasty is at the absolute apex of its power, with more than 15 dragons under their yoke. Most empires crumble from such heights. In the case of the Targaryens, their slow fall begins when King Viserys breaks with a century of tradition by naming his daughter Rhaenyra heir to the Iron Throne. But when Viserys later fathers a son, the court is shocked when Rhaenyra retains her status as his heir, and seeds of division sow friction across the realm.",
-      "poster_path": "/oxmdHR5Ka28HAJuMmS2hk5K6QQY.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        10765,
-        18,
-        10759
-      ],
-      "popularity": 65.6369,
-      "first_air_date": "2022-08-21",
-      "vote_average": 8.339,
-      "vote_count": 5329,
-      "origin_country": [
-        "US"
-      ]
-    },
-    {
-      "backdrop_path": "/7w165QdHmJuTHSQwEyJDBDpuDT7.jpg",
-      "id": 2288,
-      "name": "Prison Break",
-      "original_name": "Prison Break",
-      "overview": "Due to a political conspiracy, an innocent man is sent to death row and his only hope is his brother, who makes it his mission to deliberately get himself sent to the same prison in order to break the both of them out, from the inside out.",
-      "poster_path": "/5E1BhkCgjLBlqx557Z5yzcN0i88.jpg",
-      "media_type": "tv",
-      "adult": false,
-      "original_language": "en",
-      "genre_ids": [
-        10759,
-        80,
-        18
-      ],
-      "popularity": 117.1645,
-      "first_air_date": "2005-08-29",
-      "vote_average": 8.1,
-      "vote_count": 5426,
-      "origin_country": [
-        "US"
-      ]
-    },
+export default function Home() {
+  const { openModal } = useModal();
+
+  // Fetch Trending Data for specific rows
+  const { trendingData: trendingMovies } = useTrendingData("movie");
+  const { trendingData: trendingTV } = useTrendingData("tv");
+
+  // Static Data for Hero Banner (High Quality Backdrops)
+  const heroData = [
+    // {
+    //   "backdrop_path": "/9faGSFi5jam6pDWGNd0p8JcJgXQ.jpg",
+    //   "id": 1396,
+    //   "name": "Breaking Bad",
+    //   "original_name": "Breaking Bad",
+    //   "overview": "Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family's financial future at any cost as he enters the dangerous world of drugs and crime.",
+    //   "poster_path": "/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     18,
+    //     80
+    //   ],
+    //   "popularity": 111.0165,
+    //   "first_air_date": "2008-01-20",
+    //   "vote_average": 8.926,
+    //   "vote_count": 15575,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/56v2KjBlU4XaOv9rVYEQypROD7P.jpg",
+    //   "id": 66732,
+    //   "name": "Stranger Things",
+    //   "original_name": "Stranger Things",
+    //   "overview": "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
+    //   "poster_path": "/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     18,
+    //     10765,
+    //     9648
+    //   ],
+    //   "popularity": 65.8567,
+    //   "first_air_date": "2016-07-15",
+    //   "vote_average": 8.596,
+    //   "vote_count": 18321,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/hPea3Qy5Gd6z4kJLUruBbwAH8Rm.jpg",
+    //   "id": 60059,
+    //   "name": "Better Call Saul",
+    //   "original_name": "Better Call Saul",
+    //   "overview": "Six years before Saul Goodman meets Walter White. We meet him when the man who will become Saul Goodman is known as Jimmy McGill, a small-time lawyer searching for his destiny, and, more immediately, hustling to make ends meet. Working alongside, and, often, against Jimmy, is “fixer” Mike Ehrmantraut. The series tracks Jimmy’s transformation into Saul Goodman, the man who puts “criminal” in “criminal lawyer\".",
+    //   "poster_path": "/zjg4jpK1Wp2kiRvtt5ND0kznako.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     80,
+    //     18
+    //   ],
+    //   "popularity": 66.9043,
+    //   "first_air_date": "2015-02-08",
+    //   "vote_average": 8.689,
+    //   "vote_count": 5653,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg",
+    //   "id": 1399,
+    //   "name": "Game of Thrones",
+    //   "original_name": "Game of Thrones",
+    //   "overview": "Seven noble families fight for control of the mythical land of Westeros. Friction between the houses leads to full-scale war. All while a very ancient evil awakens in the farthest north. Amidst the war, a neglected military order of misfits, the Night's Watch, is all that stands between the realms of men and icy horrors beyond.",
+    //   "poster_path": "/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     10765,
+    //     18,
+    //     10759
+    //   ],
+    //   "popularity": 193.4111,
+    //   "first_air_date": "2011-04-17",
+    //   "vote_average": 8.456,
+    //   "vote_count": 25033,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/lHe8iwM4Cdm6RSEiara4PN8ZcBd.jpg",
+    //   "id": 44217,
+    //   "name": "Vikings",
+    //   "original_name": "Vikings",
+    //   "overview": "The adventures of Ragnar Lothbrok, the greatest hero of his age. The series tells the sagas of Ragnar's band of Viking brothers and his family, as he rises to become King of the Viking tribes. As well as being a fearless warrior, Ragnar embodies the Norse traditions of devotion to the gods. Legend has it that he was a direct descendant of Odin, the god of war and warriors.",
+    //   "poster_path": "/bQLrHIRNEkE3PdIWQrZHynQZazu.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     10759,
+    //     18,
+    //     10768
+    //   ],
+    //   "popularity": 92.2886,
+    //   "first_air_date": "2013-03-03",
+    //   "vote_average": 8.095,
+    //   "vote_count": 7182,
+    //   "origin_country": [
+    //     "CA"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg",
+    //   "id": 94997,
+    //   "name": "House of the Dragon",
+    //   "original_name": "House of the Dragon",
+    //   "overview": "The Targaryen dynasty is at the absolute apex of its power, with more than 15 dragons under their yoke. Most empires crumble from such heights. In the case of the Targaryens, their slow fall begins when King Viserys breaks with a century of tradition by naming his daughter Rhaenyra heir to the Iron Throne. But when Viserys later fathers a son, the court is shocked when Rhaenyra retains her status as his heir, and seeds of division sow friction across the realm.",
+    //   "poster_path": "/oxmdHR5Ka28HAJuMmS2hk5K6QQY.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     10765,
+    //     18,
+    //     10759
+    //   ],
+    //   "popularity": 65.6369,
+    //   "first_air_date": "2022-08-21",
+    //   "vote_average": 8.339,
+    //   "vote_count": 5329,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
+    // {
+    //   "backdrop_path": "/7w165QdHmJuTHSQwEyJDBDpuDT7.jpg",
+    //   "id": 2288,
+    //   "name": "Prison Break",
+    //   "original_name": "Prison Break",
+    //   "overview": "Due to a political conspiracy, an innocent man is sent to death row and his only hope is his brother, who makes it his mission to deliberately get himself sent to the same prison in order to break the both of them out, from the inside out.",
+    //   "poster_path": "/5E1BhkCgjLBlqx557Z5yzcN0i88.jpg",
+    //   "media_type": "tv",
+    //   "adult": false,
+    //   "original_language": "en",
+    //   "genre_ids": [
+    //     10759,
+    //     80,
+    //     18
+    //   ],
+    //   "popularity": 117.1645,
+    //   "first_air_date": "2005-08-29",
+    //   "vote_average": 8.1,
+    //   "vote_count": 5426,
+    //   "origin_country": [
+    //     "US"
+    //   ]
+    // },
     {
       "backdrop_path": "/siA2d4PNn4JVFZAwfIYx4pnKCaK.jpg",
       "id": 46648,
@@ -486,21 +513,32 @@ export default function Trending() {
   ]
 
   return (
-    <>
-      <div className="text-white px-6 mb-20 max-w-[1600px] mx-auto">
-        {data.length > 0 && <HeroBanner movies={data} />}
+    <div className="bg-[#0f1014] min-h-screen text-white pb-20 overflow-x-hidden">
+      {/* Hero Section */}
+      <div className="mb-12">
+        <HeroBanner
+          movies={heroData}
+          onMoreInfoClick={openModal}
+        />
       </div>
-      <div className="max-w-[1600px] mx-auto px-6">
-        <h1 className="text-3xl font-bold mb-8 mt-12 text-white border-l-4 border-blue-500 pl-4">Trending Movies</h1>
-        <TrendingMovie onCardClick={setSelectedContent} />
-        <h1 className="text-3xl font-bold mb-8 mt-16 text-white border-l-4 border-purple-500 pl-4">Trending TV-Shows</h1>
-        <TrendingTv onCardClick={setSelectedContent} />
+
+      <div className="max-w-[1800px] mx-auto space-y-8">
+        {/* Continue Watching */}
+        <ContinueWatchingRow />
+
+        {/* Trending Rows */}
+        <Row title="Trending Movies" movies={trendingMovies} mediaType="movie" />
+        <Row title="Trending TV Shows" movies={trendingTV} mediaType="tv" />
+
+        {/* Genre Rows */}
+        {GENRES.map((genre) => (
+          <Row
+            key={genre.id}
+            title={genre.name}
+            genreId={genre.id}
+          />
+        ))}
       </div>
-      <DetailModal
-        isOpen={!!selectedContent}
-        onClose={() => setSelectedContent(null)}
-        content={selectedContent}
-      />
-    </>
-  )
+    </div>
+  );
 }
