@@ -237,6 +237,7 @@ const Player = () => {
                             onLoad={() => setIsLoading(false)}
                             onError={() => setIsLoading(false)}
                             referrerPolicy="origin"
+                            sandbox='allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation allow-top-navigation allow-top-navigation-by-user-activation'
                         />
                     </div>
                 </div>
