@@ -53,7 +53,7 @@ const MovieCard = ({ image, title, backdrop_path, description, overview, id, med
           <button
             onClick={(e) => {
               e.stopPropagation(); // prevent opening dialog
-              navigate(`/player/${media_type}/${id}`, { state: { movieData: { id, title, backdrop_path, poster_path: image, overview: finalDescription, vote_average, release_date, first_air_date, original_language, popularity, vote_count, media_type } } });
+              navigate(`/player/${media_type?media_type:"tv"}/${id}`, { state: { movieData: { id, title, backdrop_path, poster_path: image, overview: finalDescription, vote_average, release_date, first_air_date, original_language, popularity, vote_count, media_type:media_type?media_type:"tv" } } });
             }}
             className="bg-white text-black font-bold py-2 rounded-lg 
             text-center hover:bg-gray-200 transition-all duration-300 

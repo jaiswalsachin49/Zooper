@@ -8,6 +8,7 @@ const VIDSRC_SERVERS = [
     { name: 'Player 1', url: import.meta.env.VITE_PLAYER1 },
     { name: 'Player 2', url: import.meta.env.VITE_PLAYER2 },
     { name: 'Player 3', url: import.meta.env.VITE_PLAYER3 },
+    { name: 'Player 4', url: import.meta.env.VITE_PLAYER4 },
 ]
 
 const Player = () => {
@@ -237,7 +238,7 @@ const Player = () => {
                             onLoad={() => setIsLoading(false)}
                             onError={() => setIsLoading(false)}
                             referrerPolicy="origin"
-                            sandbox='allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation allow-top-navigation allow-top-navigation-by-user-activation'
+                            // sandbox='allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation allow-top-navigation allow-top-navigation-by-user-activation'
                         />
                     </div>
                 </div>
