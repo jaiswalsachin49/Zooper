@@ -147,7 +147,7 @@ export default function TVShows() {
 
       <div className="max-w-[1800px] mx-auto space-y-8 px-6">
         {/* Continue Watching */}
-        <ContinueWatchingRow />
+        {/* <ContinueWatchingRow /> */}
 
         {/* Popular TV Shows (Trending) */}
         <Row title="Popular TV Shows" movies={trendingTV} mediaType="tv" />

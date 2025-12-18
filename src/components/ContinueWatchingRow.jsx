@@ -10,9 +10,20 @@ const ContinueWatchingRow = () => {
     useEffect(() => {
         const loadItems = () => {
             try {
-                const stored = localStorage.getItem('zooper_continue_watching');
+                const stored = localStorage.getItem('playerProgress');
                 if (stored) {
-                    setItems(JSON.parse(stored));
+                    // Start with empty array if parsing fails or if stored is not an array
+                    let parsed = [];
+                    try {
+                        const data = JSON.parse(stored);
+                        // Ensure it's an array (VidRock might define it as array or object, but our Player logic saves what it receives, usually array from VidRock)
+                        // Actually, looking at Player.jsx, we save `event.data.data`.
+                        // VidRock documentation says it returns an ARRAY of objects.
+                        parsed = Array.isArray(data) ? data : [data];
+                    } catch (e) {
+                        console.error("Parse error", e);
+                    }
+                    setItems(parsed);
                 }
             } catch (e) {
                 console.error("Failed to load continue watching", e);
@@ -29,7 +40,7 @@ const ContinueWatchingRow = () => {
         e.stopPropagation();
         const newItems = items.filter(item => item.id !== id);
         setItems(newItems);
-        localStorage.setItem('zooper_continue_watching', JSON.stringify(newItems));
+        localStorage.setItem('playerProgress', JSON.stringify(newItems));
     };
 
     const handlePlay = (item) => {
@@ -102,7 +113,9 @@ const ContinueWatchingRow = () => {
                                 {item.title || item.name}
                             </h3>
                             <div className="text-xs text-gray-400">
-                                {item.timestamp ? `Resume from ${Math.floor(item.timestamp / 60)}m` : 'Resume'}
+                                {((item.progress || item.currentTime) && (item.progress || item.currentTime) > 60)
+                                    ? `Resume from ${Math.floor((item.progress || item.currentTime) / 60)}m`
+                                    : 'Resume'}
                             </div>
                         </div>
                     ))}

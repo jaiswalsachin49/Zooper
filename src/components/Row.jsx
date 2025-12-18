@@ -95,6 +95,7 @@ const Row = ({ title, genreId, movies, mediaType = "movie" }) => {
                                     image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                                     backdrop_path={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
                                     {...movie}
+                                    media_type={movie.media_type || mediaType}
                                 />
                             </div>
                         ) : null
