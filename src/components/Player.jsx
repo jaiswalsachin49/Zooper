@@ -16,11 +16,12 @@ const Player = () => {
     const { type, playerId } = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const [currentServer, setCurrentServer] = useState(0)
+    const [currentServer, setCurrentServer] = useState(2)
     const [showServerMenu, setShowServerMenu] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isFullscreen, setIsFullscreen] = useState(false)
     const [initialStartTime, setInitialStartTime] = useState(0)
+    const [hasError, setHasError] = useState(false)
     const playerContainerRef = useRef(null)
     const { isFavorite, toggleFavorite } = useFavorites()
 
@@ -110,6 +111,9 @@ const Player = () => {
                     ...event.data.data,
                     id: Number(playerId),
                     media_type: actualType,
+                    // Explicitly save the current season and episode from our state
+                    season: selectedSeason,
+                    episode: selectedEpisode,
                     // Use a distinct field for the save time
                     last_updated: Date.now(),
                     // Ensure we capture playback progress correctly
@@ -178,6 +182,7 @@ const Player = () => {
     useEffect(() => {
         // Reset loading state when server, season, or episode changes
         setIsLoading(true)
+        setHasError(false)
 
         // Safety timeout to disable loader if iframe onLoad fails
         const timer = setTimeout(() => setIsLoading(false), 5000);
@@ -337,19 +342,40 @@ const Player = () => {
                         `}
                     </style>
                     <div className="w-full h-full relative">
-                        <iframe
-                            key={`${currentServer}-${selectedSeason}-${selectedEpisode}`}
-                            className='w-full h-full'
-                            title="Video Player"
-                            allow='autoplay; encrypted-media; gyroscope; picture-in-picture'
-                            allowFullScreen
+                        {hasError ? (
+                            <div className="absolute inset-0 flex flex-col justify-center items-center bg-black/90 z-20 space-y-4">
+                                <div className="text-red-500 mb-2">
+                                    <Info size={48} />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Playback Error</h3>
+                                <p className="text-gray-400 text-center max-w-md px-4">
+                                    We encountered an error loading the video. This might be due to server issues or network restrictions.
+                                </p>
+                                <button
+                                    onClick={() => handleServerChange((currentServer + 1) % PLAYER_SERVERS.length)}
+                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                                >
+                                    Try Next Server
+                                </button>
+                            </div>
+                        ) : (
+                            <iframe
+                                key={`${currentServer}-${selectedSeason}-${selectedEpisode}`}
+                                className='w-full h-full'
+                                title="Video Player"
+                                allow='autoplay; encrypted-media; gyroscope; picture-in-picture'
+                                allowFullScreen
                             // sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads-to-extend-cache allow-downloads'
-                            scrolling="no"
-                            src={getVideoURL()}
-                            onLoad={() => setIsLoading(false)}
-                            onError={() => setIsLoading(false)}
-                            referrerPolicy="origin"
-                        />
+                                scrolling="no"
+                                src={getVideoURL()}
+                                onLoad={() => setIsLoading(false)}
+                                onError={() => {
+                                    setIsLoading(false);
+                                    setHasError(true);
+                                }}
+                                referrerPolicy="no-referrer"
+                            />
+                        )}
                     </div>
                 </div>
             </div>
