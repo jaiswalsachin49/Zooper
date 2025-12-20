@@ -5,18 +5,17 @@ import useFavorites from '../hooks/useFavorites'
 import api from '../services/api'
 
 const PLAYER_SERVERS = [
-    { name: 'Server 1', url: import.meta.env.VITE_PLAYER1, isPrimary: true },
-    { name: 'Server 2', url: import.meta.env.VITE_PLAYER2 },
-    { name: 'Server 3', url: import.meta.env.VITE_PLAYER3 },
-    { name: 'Server 4', url: import.meta.env.VITE_PLAYER4 },
-    { name: 'Server 5', url: import.meta.env.VITE_PLAYER5 },
+    { name: 'Player 1', url: import.meta.env.VITE_PLAYER1, isPrimary: true },
+    { name: 'Player 2', url: import.meta.env.VITE_PLAYER2, isPrimary: true },
+    { name: 'Player 3', url: import.meta.env.VITE_PLAYER3 },
+    { name: 'Player 4', url: import.meta.env.VITE_PLAYER4 },
 ]
 
 const Player = () => {
     const { type, playerId } = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const [currentServer, setCurrentServer] = useState(2)
+    const [currentServer, setCurrentServer] = useState(0)
     const [showServerMenu, setShowServerMenu] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isFullscreen, setIsFullscreen] = useState(false)
@@ -27,15 +26,19 @@ const Player = () => {
 
     // State for movie/TV details
     const [details, setDetails] = useState(location.state?.movieData || null)
+    const [cast, setCast] = useState([])
+    const [castLoading, setCastLoading] = useState(false)
+    const [castError, setCastError] = useState(false)
 
     // TV Show specific states
     const [selectedSeason, setSelectedSeason] = useState(1)
     const [selectedEpisode, setSelectedEpisode] = useState(1)
     const [seasons, setSeasons] = useState([])
+    const [episodeDetails, setEpisodeDetails] = useState([])
 
     const actualType = (!type || type === "undefined") ? "movie" : type;
 
-    // Fetch details including seasons for TV shows
+    // Fetch details including seasons for TV shows and cast
     useEffect(() => {
         if (playerId) {
             const fetchDetails = async () => {
@@ -49,6 +52,19 @@ const Player = () => {
                         const validSeasons = response.data.seasons.filter(s => s.season_number > 0);
                         setSeasons(validSeasons);
                     }
+
+                    // Fetch cast
+                    setCastLoading(true);
+                    setCastError(false);
+                    try {
+                        const creditsResponse = await api.get(`/${actualType}/${playerId}/credits`);
+                        setCast(creditsResponse.data.cast?.slice(0, 20) || []);
+                    } catch (creditsError) {
+                        console.error("Failed to fetch cast", creditsError);
+                        setCastError(true);
+                    } finally {
+                        setCastLoading(false);
+                    }
                 } catch (error) {
                     console.error("Failed to fetch details", error);
                 }
@@ -56,6 +72,22 @@ const Player = () => {
             fetchDetails();
         }
     }, [playerId, actualType]);
+
+    // Fetch episode details for TV shows
+    useEffect(() => {
+        if (actualType === 'tv' && playerId && selectedSeason) {
+            const fetchEpisodeDetails = async () => {
+                try {
+                    const response = await api.get(`/tv/${playerId}/season/${selectedSeason}`);
+                    setEpisodeDetails(response.data.episodes || []);
+                } catch (error) {
+                    console.error("Failed to fetch episode details", error);
+                    setEpisodeDetails([]);
+                }
+            };
+            fetchEpisodeDetails();
+        }
+    }, [playerId, selectedSeason, actualType]);
 
     // Continue Watching - Load last watched episode
     useEffect(() => {
@@ -83,16 +115,124 @@ const Player = () => {
         }
     }, [actualType, playerId, currentServer]);
 
-    // Player postMessage event listener for continue watching
+    // Player postMessage event listener for continue watching (VidFast & VidLink)
     useEffect(() => {
         const handlePlayerMessage = (event) => {
-            // Validate origin for security
-            if (event.origin !== 'https://vidrock.net') return;
+            // Validate origin for security - support both VidFast and VidLink
+            const validOrigins = [
+                'https://vidfast.pro',
+                'https://vidfast.in',
+                'https://vidfast.io',
+                'https://vidfast.me',
+                'https://vidfast.net',
+                'https://vidfast.pm',
+                'https://vidfast.xyz',
+                'https://vidlink.pro',
+                'https://vidrock.net' // Legacy support
+            ];
+
+            if (!validOrigins.includes(event.origin)) return;
 
             // Dismiss loading state when we receive a valid message from the player
             setIsLoading(false);
 
-            // Store continue watching data
+            // Handle PLAYER_EVENT for real-time progress tracking
+            if (event.data?.type === 'PLAYER_EVENT') {
+                const { event: eventType, currentTime, duration, season, episode } = event.data.data;
+
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`Player ${eventType}:`, { currentTime, duration, season, episode });
+                }
+
+                // Save progress on important events
+                if (['timeupdate', 'pause', 'seeked'].includes(eventType)) {
+                    // Throttle timeupdate saves to every 10 seconds
+                    if (eventType === 'timeupdate') {
+                        const lastSave = window._lastProgressSave || 0;
+                        if (Date.now() - lastSave < 10000) return; // Skip if saved less than 10s ago
+                    }
+
+                    const progressData = {
+                        id: Number(playerId),
+                        media_type: actualType,
+                        title: details?.title || details?.name,
+                        poster_path: details?.poster_path,
+                        backdrop_path: details?.backdrop_path,
+                        progress: {
+                            watched: currentTime,
+                            duration: duration
+                        },
+                        last_updated: Date.now()
+                    };
+
+                    // Add season/episode for TV shows
+                    if (actualType === 'tv') {
+                        progressData.last_season_watched = selectedSeason;
+                        progressData.last_episode_watched = selectedEpisode;
+                        progressData.show_progress = {
+                            [`s${selectedSeason}e${selectedEpisode}`]: {
+                                season: selectedSeason,
+                                episode: selectedEpisode,
+                                progress: {
+                                    watched: currentTime,
+                                    duration: duration
+                                },
+                                last_updated: Date.now()
+                            }
+                        };
+                    }
+
+                    // Get and update existing progress
+                    try {
+                        let allProgress = [];
+                        const stored = localStorage.getItem('playerProgress');
+                        if (stored) {
+                            allProgress = JSON.parse(stored);
+                            if (!Array.isArray(allProgress)) allProgress = [allProgress];
+                        }
+
+                        // Find and update existing entry
+                        const existingIndex = allProgress.findIndex(
+                            item => item.id === Number(playerId) && item.media_type === actualType
+                        );
+
+                        if (existingIndex >= 0) {
+                            // Merge with existing, preserving episode progress for TV shows
+                            if (actualType === 'tv' && allProgress[existingIndex].show_progress) {
+                                progressData.show_progress = {
+                                    ...allProgress[existingIndex].show_progress,
+                                    ...progressData.show_progress
+                                };
+                            }
+                            allProgress[existingIndex] = { ...allProgress[existingIndex], ...progressData };
+                        } else {
+                            allProgress.unshift(progressData);
+                        }
+
+                        // Keep max 20 items
+                        if (allProgress.length > 20) allProgress = allProgress.slice(0, 20);
+
+                        localStorage.setItem('playerProgress', JSON.stringify(allProgress));
+                        window._lastProgressSave = Date.now();
+
+                        if (process.env.NODE_ENV === 'development') {
+                            console.log(`Progress saved (${eventType}):`, progressData);
+                        }
+                    } catch (e) {
+                        console.error('Error saving progress:', e);
+                    }
+                }
+
+                // Handle video ended
+                if (eventType === 'ended') {
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log('Video playback ended');
+                    }
+                    // Could trigger auto-play next episode here
+                }
+            }
+
+            // Store continue watching data from MEDIA_DATA event
             if (event.data?.type === 'MEDIA_DATA') {
                 // Get existing history first to preserve images if needed
                 const existingRaw = localStorage.getItem('playerProgress');
@@ -134,20 +274,14 @@ const Player = () => {
 
                 localStorage.setItem('playerProgress', JSON.stringify(history));
                 if (process.env.NODE_ENV === 'development') {
-                    console.log('Progress saved:', mediaData);
+                    console.log('Progress saved (MEDIA_DATA):', mediaData);
                 }
-            }
-
-            // Track player events (optional, for analytics)
-            if (event.data?.type === 'PLAYER_EVENT') {
-                const { event: eventType, currentTime, duration, season, episode } = event.data.data;
-                console.log(`Player ${eventType}:`, { currentTime, duration, season, episode });
             }
         };
 
         window.addEventListener('message', handlePlayerMessage);
         return () => window.removeEventListener('message', handlePlayerMessage);
-    }, [playerId, actualType, details]);
+    }, [playerId, actualType, details, selectedSeason, selectedEpisode]);
 
     // Build video URL based on selected server
     const getVideoURL = () => {
@@ -315,12 +449,12 @@ const Player = () => {
                         </div>
 
                         {/* Fullscreen Toggle */}
-                        <button
+                        {/* <button
                             onClick={toggleFullscreen}
                             className="p-2 bg-black/60 hover:bg-black/80 rounded-md text-white transition-all backdrop-blur-md border border-white/20"
                         >
                             {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-                        </button>
+                        </button> */}
                     </div>
 
                     {/* Loading Indicator */}
@@ -365,7 +499,7 @@ const Player = () => {
                                 title="Video Player"
                                 allow='autoplay; encrypted-media; gyroscope; picture-in-picture'
                                 allowFullScreen
-                            // sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads-to-extend-cache allow-downloads'
+                                // sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads-to-extend-cache allow-downloads'
                                 scrolling="no"
                                 src={getVideoURL()}
                                 onLoad={() => setIsLoading(false)}
@@ -419,12 +553,69 @@ const Player = () => {
                                             </button>
                                         </div>
 
+                                        {/* Genres */}
+                                        {details.genres && details.genres.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                {details.genres.map((genre) => (
+                                                    <span key={genre.id} className="px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300">
+                                                        {genre.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
                                         <div className="bg-[#16181f] p-6 rounded-xl border border-white/5">
                                             <h3 className="text-lg font-semibold text-white mb-2">Overview</h3>
                                             <p className="text-gray-400 leading-relaxed font-light">
                                                 {details.overview || "No overview available."}
                                             </p>
-                                        </div>
+
+                                            {/* Additional Details */}
+                                            <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                                                {details.runtime && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Runtime</span>
+                                                        <span className="text-white">{details.runtime} min</span>
+                                                    </div>
+                                                )}
+                                                {details.episode_run_time && details.episode_run_time.length > 0 && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Episode Runtime</span>
+                                                        <span className="text-white">{details.episode_run_time[0]} min</span>
+                                                    </div>
+                                                )}
+                                                {details.status && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Status</span>
+                                                        <span className="text-white">{details.status}</span>
+                                                    </div>
+                                                )}
+                                                {details.number_of_seasons && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Seasons</span>
+                                                        <span className="text-white">{details.number_of_seasons}</span>
+                                                    </div>
+                                                )}
+                                                {details.production_countries && details.production_countries.length > 0 && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Country</span>
+                                                        <span className="text-white">{details.production_countries.map(c => c.name).join(', ')}</span>
+                                                    </div>
+                                                )}
+                                                {details.spoken_languages && details.spoken_languages.length > 0 && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Languages</span>
+                                                        <span className="text-white">{details.spoken_languages.map(l => l.english_name).join(', ')}</span>
+                                                    </div>
+                                                )}
+                                                {details.production_companies && details.production_companies.length > 0 && (
+                                                    <div className="col-span-2">
+                                                        <span className="block text-gray-500 text-sm mb-1">Production</span>
+                                                        <span className="text-white text-sm">{details.production_companies.slice(0, 3).map(c => c.name).join(' • ')}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div >
                                     </>
                                 ) : (
                                     <div className="animate-pulse space-y-4">
@@ -446,13 +637,19 @@ const Player = () => {
                                         <p>
                                             If the video is not found or fails to load, please try switching servers using the server menu in the top right corner of the player.
                                         </p>
+                                        {/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor) && (
+                                            <p className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-200">
+                                                <strong className="block text-yellow-500 mb-1">Chrome Users</strong>
+                                                If Player 1 or Player 2 doesn't work, please switch to <strong>Player 3</strong> or <strong>Player 4</strong> using the server menu above for better compatibility.
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            </div >
+                        </div >
 
                         {/* Season/Episode Selector (Right side) */}
-                        <div className="w-full lg:w-[400px] shrink-0">
+                        < div className="w-full lg:w-[400px] shrink-0" >
                             <div className="sticky top-6 relative overflow-hidden rounded-2xl bg-[#16181f] border border-white/10 shadow-2xl h-fit">
                                 {/* Blue Accent Top */}
                                 {/* <div className="h-1 w-full bg-gradient-to-r from-blue-600 to-purple-600"></div> */}
@@ -491,30 +688,60 @@ const Player = () => {
                                             </p>
                                         </div>
 
-                                        {/* Episode List (Vertical) */}
+                                        {/* Episode List */}
                                         <div>
-                                            <label className="block text-xs font-semibold uppercase text-gray-500 mb-2 tracking-wider">Select Episode</label>
-                                            <div className="grid grid-cols-4 lg:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                                {Array.from({ length: episodeCount }, (_, i) => {
-                                                    const epNum = i + 1;
-                                                    const isSelected = selectedEpisode === epNum;
-                                                    return (
-                                                        <button
-                                                            key={epNum}
-                                                            onClick={() => setSelectedEpisode(epNum)}
-                                                            className={`
-                                                                    h-12 px-1 rounded
-                                                                    text-xs font-medium
-                                                                    transition
+                                            <label className="block text-xs font-semibold uppercase text-gray-500 mb-3 tracking-wider">Episodes</label>
+                                            <div className="space-y-1 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                                                {episodeDetails.length > 0 ? (
+                                                    episodeDetails.map((episode) => {
+                                                        const isSelected = selectedEpisode === episode.episode_number;
+                                                        return (
+                                                            <button
+                                                                key={episode.episode_number}
+                                                                onClick={() => setSelectedEpisode(episode.episode_number)}
+                                                                className={`
+                                                                    w-full text-left px-4 py-3 rounded-lg
+                                                                    transition-all
                                                                     ${isSelected
-                                                                    ? 'bg-blue-500 text-white'
-                                                                    : 'text-gray-500 hover:text-white hover:bg-white/5'}
-                                                            `}
-                                                        >
-                                                            {epNum}
-                                                        </button>
-                                                    );
-                                                })}
+                                                                        ? 'bg-blue-600 text-white'
+                                                                        : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                                                `}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <span className="text-sm font-semibold min-w-[80px]">
+                                                                        Episode #{episode.episode_number}
+                                                                    </span>
+                                                                    <span className="text-sm truncate">
+                                                                        {episode.name || 'Episode ' + episode.episode_number}
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    // Fallback to number grid if episode details not loaded
+                                                    Array.from({ length: episodeCount }, (_, i) => {
+                                                        const epNum = i + 1;
+                                                        const isSelected = selectedEpisode === epNum;
+                                                        return (
+                                                            <button
+                                                                key={epNum}
+                                                                onClick={() => setSelectedEpisode(epNum)}
+                                                                className={`
+                                                                    w-full text-left px-4 py-3 rounded-lg
+                                                                    transition-all
+                                                                    ${isSelected
+                                                                        ? 'bg-blue-600 text-white'
+                                                                        : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                                                `}
+                                                            >
+                                                                <span className="text-sm font-semibold">
+                                                                    Episode #{epNum}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })
+                                                )}
                                             </div>
                                         </div>
 
@@ -538,82 +765,235 @@ const Player = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </div >
+                    </div >
+
+                    {/* Cast List - Full width below both columns to avoid interfering with episode selector */}
+                    {
+                        castLoading ? (
+                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                <h3 className="text-lg font-semibold text-white mb-4">Cast</h3>
+                                <div className="flex gap-4 overflow-x-hidden">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <div key={i} className="flex-shrink-0 w-32">
+                                            <div className="aspect-[2/3] bg-white/5 rounded-lg animate-pulse mb-2"></div>
+                                            <div className="h-4 bg-white/5 rounded animate-pulse mb-1"></div>
+                                            <div className="h-3 bg-white/5 rounded animate-pulse w-3/4"></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : castError ? (
+                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                <h3 className="text-lg font-semibold text-white mb-2">Cast</h3>
+                                <p className="text-gray-500 text-sm">Unable to load cast information at this time.</p>
+                            </div>
+                        ) : cast.length > 0 ? (
+                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                <h3 className="text-lg font-semibold text-white mb-4">Cast</h3>
+                                <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                                    {cast.map((actor) => (
+                                        <div key={actor.id} className="flex-shrink-0 w-32 group cursor-pointer">
+                                            <div className="aspect-[2/3] rounded-lg overflow-hidden bg-white/5 mb-2">
+                                                {actor.profile_path ? (
+                                                    <img
+                                                        src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
+                                                        alt={actor.name}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            const fallback = document.createElement('div');
+                                                            fallback.className = 'w-full h-full flex items-center justify-center text-gray-600';
+                                                            fallback.innerHTML = '<svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>';
+                                                            e.target.parentElement.appendChild(fallback);
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-600">
+                                                        <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p className="text-sm font-medium text-white truncate">{actor.name}</p>
+                                            <p className="text-xs text-gray-500 truncate">{actor.character}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null
+                    }
+                </div >
             )}
 
             {/* For Movies, just show details (centered max width) */}
-            {actualType === 'movie' && (
-                <div className="max-w-7xl mx-auto w-full px-6 py-8">
-                    <div className="flex flex-col md:flex-row gap-8 items-start">
-                        {/* Content Details */}
-                        <div className="flex-1">
-                            {details ? (
-                                <>
-                                    <h1 className="text-3xl font-bold text-white mb-2">{details.title || details.name}</h1>
+            {
+                actualType === 'movie' && (
+                    <div className="max-w-7xl mx-auto w-full px-6 py-8">
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                            {/* Content Details */}
+                            <div className="flex-1">
+                                {details ? (
+                                    <>
+                                        <h1 className="text-3xl font-bold text-white mb-2">{details.title || details.name}</h1>
 
-                                    <div className="flex items-center gap-4 text-gray-400 text-sm mb-6">
-                                        <div className="flex items-center gap-1">
-                                            <Star size={16} className="text-yellow-500 fill-yellow-500" />
-                                            <span>{details.vote_average?.toFixed(1)}</span>
+                                        <div className="flex items-center gap-4 text-gray-400 text-sm mb-6">
+                                            <div className="flex items-center gap-1">
+                                                <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                                                <span>{details.vote_average?.toFixed(1)}</span>
+                                            </div>
+                                            <span>•</span>
+                                            <div className="flex items-center gap-1">
+                                                <Calendar size={16} />
+                                                <span>{(details.release_date || details.first_air_date)?.slice(0, 4)}</span>
+                                            </div>
+                                            <span>•</span>
+                                            <span className="capitalize">{actualType === 'movie' ? 'Movie' : 'TV Show'}</span>
                                         </div>
-                                        <span>•</span>
-                                        <div className="flex items-center gap-1">
-                                            <Calendar size={16} />
-                                            <span>{(details.release_date || details.first_air_date)?.slice(0, 4)}</span>
+
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <button
+                                                onClick={handleToggleFavorite}
+                                                className={`px-6 py-2.5 rounded-full font-bold flex items-center gap-2 transition-all transform active:scale-95 ${isFavorited
+                                                    ? 'bg-red-600 text-white hover:bg-red-700'
+                                                    : 'bg-white text-black hover:bg-gray-200'
+                                                    }`}
+                                            >
+                                                <Heart size={20} className={isFavorited ? 'fill-white' : ''} />
+                                                {isFavorited ? 'Favorited' : 'Add to Favorites'}
+                                            </button>
                                         </div>
-                                        <span>•</span>
-                                        <span className="capitalize">{actualType === 'movie' ? 'Movie' : 'TV Show'}</span>
-                                    </div>
 
-                                    <div className="flex items-center gap-4 mb-8">
-                                        <button
-                                            onClick={handleToggleFavorite}
-                                            className={`px-6 py-2.5 rounded-full font-bold flex items-center gap-2 transition-all transform active:scale-95 ${isFavorited
-                                                ? 'bg-red-600 text-white hover:bg-red-700'
-                                                : 'bg-white text-black hover:bg-gray-200'
-                                                }`}
-                                        >
-                                            <Heart size={20} className={isFavorited ? 'fill-white' : ''} />
-                                            {isFavorited ? 'Favorited' : 'Add to Favorites'}
-                                        </button>
-                                    </div>
+                                        {/* Genres */}
+                                        {details.genres && details.genres.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                {details.genres.map((genre) => (
+                                                    <span key={genre.id} className="px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300">
+                                                        {genre.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
 
-                                    <div className="bg-[#16181f] p-6 rounded-xl border border-white/5">
-                                        <h3 className="text-lg font-semibold text-white mb-2">Overview</h3>
-                                        <p className="text-gray-400 leading-relaxed font-light">
-                                            {details.overview || "No overview available."}
+                                        <div className="bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                            <h3 className="text-lg font-semibold text-white mb-2">Overview</h3>
+                                            <p className="text-gray-400 leading-relaxed font-light">
+                                                {details.overview || "No overview available."}
+                                            </p>
+
+                                            {/* Additional Details */}
+                                            <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                                                {details.runtime && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Runtime</span>
+                                                        <span className="text-white">{details.runtime} min</span>
+                                                    </div>
+                                                )}
+                                                {details.status && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Status</span>
+                                                        <span className="text-white">{details.status}</span>
+                                                    </div>
+                                                )}
+                                                {details.budget && details.budget > 0 && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Budget</span>
+                                                        <span className="text-white">${(details.budget / 1000000).toFixed(1)}M</span>
+                                                    </div>
+                                                )}
+                                                {details.revenue && details.revenue > 0 && (
+                                                    <div>
+                                                        <span className="block text-gray-500 text-sm">Revenue</span>
+                                                        <span className="text-white">${(details.revenue / 1000000).toFixed(1)}M</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Cast List for Movies */}
+                                        {castLoading ? (
+                                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                                <h3 className="text-lg font-semibold text-white mb-4">Cast</h3>
+                                                <div className="flex gap-4 overflow-x-hidden">
+                                                    {[1, 2, 3, 4, 5].map((i) => (
+                                                        <div key={i} className="flex-shrink-0 w-32">
+                                                            <div className="aspect-[2/3] bg-white/5 rounded-lg animate-pulse mb-2"></div>
+                                                            <div className="h-4 bg-white/5 rounded animate-pulse mb-1"></div>
+                                                            <div className="h-3 bg-white/5 rounded animate-pulse w-3/4"></div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : castError ? (
+                                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                                <h3 className="text-lg font-semibold text-white mb-2">Cast</h3>
+                                                <p className="text-gray-500 text-sm">Unable to load cast information at this time.</p>
+                                            </div>
+                                        ) : cast.length > 0 ? (
+                                            <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
+                                                <h3 className="text-lg font-semibold text-white mb-4">Cast</h3>
+                                                <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                                                    {cast.map((actor) => (
+                                                        <div key={actor.id} className="flex-shrink-0 w-32 group cursor-pointer">
+                                                            <div className="aspect-[2/3] rounded-lg overflow-hidden bg-white/5 mb-2">
+                                                                {actor.profile_path ? (
+                                                                    <img
+                                                                        src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
+                                                                        alt={actor.name}
+                                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                                        onError={(e) => {
+                                                                            e.target.style.display = 'none';
+                                                                            const fallback = document.createElement('div');
+                                                                            fallback.className = 'w-full h-full flex items-center justify-center text-gray-600';
+                                                                            fallback.innerHTML = '<svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>';
+                                                                            e.target.parentElement.appendChild(fallback);
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-full h-full flex items-center justify-center text-gray-600">
+                                                                        <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                                        </svg>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm font-medium text-white truncate">{actor.name}</p>
+                                                            <p className="text-xs text-gray-500 truncate">{actor.character}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                    </>
+                                ) : (
+                                    <div className="animate-pulse space-y-4">
+                                        <div className="h-8 bg-white/10 rounded w-1/3"></div>
+                                        <div className="h-4 bg-white/10 rounded w-1/4"></div>
+                                        <div className="h-32 bg-white/10 rounded w-full"></div>
+                                    </div>
+                                )}
+
+                                {/* Disclaimer */}
+                                <div className="mt-8 flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-200/80 text-sm">
+                                    <Info size={20} className="shrink-0 mt-0.5 text-blue-500" />
+                                    <div className="space-y-2">
+                                        <p>
+                                            <strong className="block text-blue-500 mb-1">Continue Watching</strong>
+                                            Your watch progress is automatically saved and synced across sessions.
+                                            {actualType === 'tv' && ' For TV shows, we will remember your last watched episode.'}
+                                        </p>
+                                        <p>
+                                            If the video is not found or fails to load, please try switching servers using the server menu in the top right corner of the player.
                                         </p>
                                     </div>
-                                </>
-                            ) : (
-                                <div className="animate-pulse space-y-4">
-                                    <div className="h-8 bg-white/10 rounded w-1/3"></div>
-                                    <div className="h-4 bg-white/10 rounded w-1/4"></div>
-                                    <div className="h-32 bg-white/10 rounded w-full"></div>
-                                </div>
-                            )}
-
-                            {/* Disclaimer */}
-                            <div className="mt-8 flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-200/80 text-sm">
-                                <Info size={20} className="shrink-0 mt-0.5 text-blue-500" />
-                                <div className="space-y-2">
-                                    <p>
-                                        <strong className="block text-blue-500 mb-1">Continue Watching</strong>
-                                        Your watch progress is automatically saved and synced across sessions.
-                                        {actualType === 'tv' && ' For TV shows, we will remember your last watched episode.'}
-                                    </p>
-                                    <p>
-                                        If the video is not found or fails to load, please try switching servers using the server menu in the top right corner of the player.
-                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     )
 }
 
