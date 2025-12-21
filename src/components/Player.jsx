@@ -398,7 +398,7 @@ const Player = () => {
     const episodeCount = currentSeasonData?.episode_count || 20; // Default to 20 if unknown
 
     return (
-        <div className="min-h-screen bg-[#0f1014] text-white flex flex-col">
+        <div className="min-h-screen bg-[#0f1014] text-white flex flex-col overflow-x-hidden">
             {/* Top Navigation / Controls */}
             <div className="px-6 py-4 flex items-center gap-4 z-10">
                 <button
@@ -408,7 +408,7 @@ const Player = () => {
                 >
                     <ArrowLeft size={24} />
                 </button>
-                <div className="flex-1" />
+                <div className="flex-1 w-[50%]" />
             </div>
 
             {/* Video Player Section */}
@@ -773,7 +773,7 @@ const Player = () => {
                         castLoading ? (
                             <div className="mt-6 bg-[#16181f] p-6 rounded-xl border border-white/5">
                                 <h3 className="text-lg font-semibold text-white mb-4">Cast</h3>
-                                <div className="flex gap-4 overflow-x-hidden">
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                                     {[1, 2, 3, 4, 5].map((i) => (
                                         <div key={i} className="flex-shrink-0 w-32">
                                             <div className="aspect-[2/3] bg-white/5 rounded-lg animate-pulse mb-2"></div>
@@ -833,7 +833,7 @@ const Player = () => {
                     <div className="max-w-7xl mx-auto w-full px-6 py-8">
                         <div className="flex flex-col md:flex-row gap-8 items-start">
                             {/* Content Details */}
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 {details ? (
                                     <>
                                         <h1 className="text-3xl font-bold text-white mb-2">{details.title || details.name}</h1>
