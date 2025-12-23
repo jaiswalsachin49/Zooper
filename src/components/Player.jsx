@@ -9,6 +9,7 @@ const PLAYER_SERVERS = [
     { name: 'Player 2', url: import.meta.env.VITE_PLAYER2, isPrimary: true },
     { name: 'Player 3', url: import.meta.env.VITE_PLAYER3 },
     { name: 'Player 4', url: import.meta.env.VITE_PLAYER4 },
+    { name: 'Player 5', url: import.meta.env.VITE_PLAYER5, isPrimary: true },
 ]
 
 const Player = () => {
